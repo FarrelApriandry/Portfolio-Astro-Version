@@ -5,8 +5,14 @@ import SpeedInsights from '@vercel/speed-insights/astro';
 
 const {
   title = 'Farrel Apriandry | Full-Stack Software Engineer',
-  description = 'Farrel Apriandry builds scalable software systems, developer tools, and modern web platforms with TypeScript and PostgreSQL.',
+  description = 'Farrel Apriandry builds scalable software systems, developer tools, and modern web platforms with TypeScript and Docker.',
+  image = '/og-image.png',
+  noindex = false,
 } = Astro.props;
+
+const baseURL = Astro.site ?? Astro.url.origin;
+const canonicalURL = new URL(Astro.url.pathname, baseURL);
+const imageURL = new URL(image, baseURL);
 ---
 
 <!doctype html>
@@ -15,7 +21,24 @@ const {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="author" content="Farrel Apriandry" />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
     <meta name="theme-color" content="#0A0A0A" />
+    <link rel="canonical" href={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={imageURL} />
+    <meta property="og:image:width" content="1440" />
+    <meta property="og:image:height" content="753" />
+    <meta property="og:image:alt" content="Farrel Apriandry Portfolio Preview" />
+    <meta property="og:site_name" content="Farrel Apriandry Portfolio" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageURL} />
+    <meta name="twitter:image:alt" content="Farrel Apriandry Portfolio Preview" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />

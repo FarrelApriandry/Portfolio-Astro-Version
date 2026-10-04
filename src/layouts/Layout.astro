@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import Analytics from '@vercel/analytics/astro'
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 const {
   title = 'Farrel Apriandry | Full-Stack Software Engineer',
@@ -18,6 +20,8 @@ const {
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <Analytics />
+    <SpeedInsights />
   </head>
   <body class="bg-[#0A0A0A] text-[#F5F5F5] antialiased selection:bg-[#7DD3A7]/20 selection:text-[#F5F5F5]">
     <div class="relative z-10">

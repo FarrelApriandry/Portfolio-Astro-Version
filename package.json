@@ -18,6 +18,8 @@
     "@neon/config": "^1.7.2",
     "@neon/env": "^1.4.3",
     "@neondatabase/serverless": "^1.1.0",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.3",
     "drizzle-orm": "^0.45.3",
@@ -27,12 +29,14 @@
     "react-activity-calendar": "^3.2.1",
     "react-dom": "^19.3.0",
     "react-markdown": "^10.1.0",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "three": "^0.186.1"
   },
   "allowScripts": {
     "esbuild": true
   },
   "devDependencies": {
+    "@types/three": "^0.186.0",
     "dotenv": "^18.0.3",
     "drizzle-kit": "^0.31.11"
   }

@@ -6,6 +6,7 @@ import ProjectExplorer from '../components/ProjectExplorer.tsx';
 import GitHubActivity from '../components/GitHubActivity.tsx';
 import ResumeModal from '../components/ResumeModal.tsx';
 import Footer from '../components/Footer.astro';
+import HeroAvatar from '../components/3d/HeroAvatar.tsx';
 import { getPortfolioData } from '../lib/db';
 import resumeMarkdown from '../docs/CV.md?raw';
 
@@ -120,6 +121,8 @@ const currentYear = new Date().getFullYear();
           </div>
 
           <div class="mt-5 space-y-5">
+            <HeroAvatar client:visible />
+
             <div>
               <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Building</p>
               <p class="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[#F5F5F5]">{profile.status}</p>

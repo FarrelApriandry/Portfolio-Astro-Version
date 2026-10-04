@@ -60,7 +60,7 @@ export default function ResumeModal({ content }: ResumeModalProps) {
         onClick={() => setIsOpen(true)}
         className="inline-flex items-center justify-center rounded-md border border-[#262626] bg-[#111111] px-4 py-2 text-sm font-medium text-[#F5F5F5] transition-colors hover:border-[#3a3a3a] hover:bg-[#161616]"
       >
-        Resume
+        View Resume
       </button>
 
       {isOpen ? (

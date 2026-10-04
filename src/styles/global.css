@@ -65,6 +65,55 @@ p, li, a, span, div {
   font-family: 'JetBrains Mono', 'SFMono-Regular', monospace;
 }
 
+/* GitHub activity calendar — tuned to the site palette */
+.github-activity-calendar {
+  color: var(--secondary-text);
+}
+
+.github-activity-calendar text {
+  fill: var(--muted-text);
+  font-family: 'JetBrains Mono', 'SFMono-Regular', monospace;
+}
+
+.github-activity-calendar rect {
+  stroke: rgba(255, 255, 255, 0.04);
+  stroke-width: 1px;
+}
+
+.github-activity-calendar__scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #2e2e2e transparent;
+}
+
+.github-activity-calendar__scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.github-activity-calendar__scroll::-webkit-scrollbar-thumb {
+  background: #2e2e2e;
+  border-radius: 999px;
+}
+
+.github-activity-calendar__scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Library tooltip restyled to surface-elevated + accent border */
+.react-activity-calendar__tooltip {
+  background-color: var(--surface-elevated) !important;
+  color: var(--primary-text) !important;
+  border: 1px solid var(--border);
+  border-radius: 8px !important;
+  padding: 0.4em 0.7em !important;
+  font-size: 12px !important;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', monospace !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  .react-activity-calendar__tooltip-arrow {
+    fill: var(--surface-elevated) !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

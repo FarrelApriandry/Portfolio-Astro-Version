@@ -1,41 +1,50 @@
 ---
-import { readFile } from 'node:fs/promises';
+import { ArrowUpRight, ExternalLink, Github, Linkedin, Mail, Rss } from 'lucide-react';
 import Layout from '../layouts/Layout.astro';
-import MobileNav from '../components/MobileNav.tsx';
+import Navbar from '../components/Navbar.tsx';
+import ProjectExplorer from '../components/ProjectExplorer.tsx';
+import GitHubActivity from '../components/GitHubActivity.tsx';
 import ResumeModal from '../components/ResumeModal.tsx';
+import Footer from '../components/Footer.astro';
 import { getPortfolioData } from '../lib/db';
+import resumeMarkdown from '../docs/CV.md?raw';
 
 const { profile, socials, skillGroups, experiences, educations, projects, awards, intellectualProperties } = await getPortfolioData();
-const resumeMarkdown = await readFile(new URL('../docs/CV.md', import.meta.url), 'utf8');
 
 if (!profile) {
   throw new Error('Profile data is missing');
 }
 
 const navItems = [
-  { label: 'Work', href: '#work' },
-  { label: 'Engineering', href: '#engineering' },
-  { label: 'Notes', href: '#notes' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Tech Stack', href: '#tech-stack' },
+  { label: 'Activity', href: '#activity' },
+  { label: 'Writing', href: '#writing' },
   { label: 'About', href: '#about' },
+  { label: 'Contact', href: '#contact' },
 ];
 
 const socialMap = new Map(socials.map((social) => [social.platform.toLowerCase(), social.url]));
 
-const actionLinks = [
-  { label: 'GitHub', href: socialMap.get('github') ?? 'https://github.com/FarrelApriandry', external: true },
-  { label: 'LinkedIn', href: socialMap.get('linkedin') ?? 'https://linkedin.com/in/farrelapriandry', external: true },
-  { label: 'Email', href: socialMap.get('email') ?? `mailto:${profile.email}`, external: false },
-  { label: 'Resume', kind: 'modal' as const },
+const heroSocialLinks = [
+  { label: 'GitHub', href: socialMap.get('github') ?? 'https://github.com/FarrelApriandry', icon: Github },
+  { label: 'LinkedIn', href: socialMap.get('linkedin') ?? 'https://linkedin.com/in/farrelapriandry', icon: Linkedin },
+  { label: 'Email', href: socialMap.get('email') ?? `mailto:${profile.email}`, icon: Mail },
+  { label: 'Blog', href: socialMap.get('medium') ?? socialMap.get('blog') ?? '#writing', icon: Rss },
 ];
 
-const featuredProject = projects.find((project) => project.featured) ?? projects[0];
-const supportingProjects = featuredProject ? projects.filter((project) => project.id !== featuredProject.id).slice(0, 4) : [];
+const footerSocialLinks = [
+  { label: 'GitHub', href: socialMap.get('github') ?? 'https://github.com/FarrelApriandry' },
+  { label: 'LinkedIn', href: socialMap.get('linkedin') ?? 'https://linkedin.com/in/farrelapriandry' },
+  { label: 'Email', href: socialMap.get('email') ?? `mailto:${profile.email}` },
+  { label: 'Writing', href: socialMap.get('medium') ?? socialMap.get('blog') ?? '#writing' },
+];
 
 const engineeringNotes = [
-  { id: '01', title: 'Designing a Self-Hosted HomeLab', meta: 'Linux · Docker · Networking' },
-  { id: '02', title: 'Building a Real-Time System Monitoring Dashboard', meta: 'Node.js · WebSockets · Metrics' },
-  { id: '03', title: 'Structuring TypeScript Backend Services', meta: 'Architecture · API · PostgreSQL' },
-  { id: '04', title: 'What I Learned Building Nusantara', meta: 'Unreal Engine · Game Systems · Production' },
+  { id: '01', title: 'Designing a Self-Hosted HomeLab', meta: 'Linux · Docker · Networking', href: '#contact', badge: 'Systems' },
+  { id: '02', title: 'Building a Real-Time System Monitoring Dashboard', meta: 'Node.js · WebSockets · Metrics', href: '#contact', badge: 'Observability' },
+  { id: '03', title: 'Structuring TypeScript Backend Services', meta: 'Architecture · API · PostgreSQL', href: '#contact', badge: 'Backend' },
+  { id: '04', title: 'What I Learned Building Nusantara', meta: 'Unreal Engine · Game Systems · Production', href: '#contact', badge: 'Game Dev' },
 ];
 
 const currentlyBuilding = [
@@ -48,373 +57,323 @@ const currentYear = new Date().getFullYear();
 ---
 
 <Layout title={`${profile.name} | ${profile.role}`} description={profile.value_statement}>
-  <div class="relative">
-    <header class="sticky top-0 z-30 border-b border-[#262626] bg-[#0A0A0A]/80 backdrop-blur-md">
-      <div class="mx-auto flex max-w-[1280px] items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <a href="#top" class="text-sm font-medium tracking-[0.18em] text-[#F5F5F5] uppercase">Farrel Apriandry</a>
+  <Navbar client:load brand={profile.name} items={navItems} contactHref="#contact" resumeHref="/resume.pdf" />
 
-        <nav aria-label="Main navigation" class="hidden items-center gap-8 md:flex">
-          {navItems.map((item) => (
+  <main id="top" class="relative z-10 mx-auto max-w-[1280px] px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-24 lg:pt-14">
+    <section class="pb-16 md:pb-20 lg:pb-24">
+      <div class="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+        <div>
+          <p class="mono text-[11px] font-medium uppercase tracking-[0.26em] text-[#7DD3A7]">Full-Stack TypeScript / Software Engineer</p>
+          <h1 class="mt-6 max-w-[18ch] text-5xl font-black uppercase leading-[0.88] tracking-[-0.09em] text-[#F5F5F5] sm:text-6xl lg:text-7xl">
+            Farrel Apriandry
+          </h1>
+          <p class="mt-5 text-xl font-medium text-[#D4D4D4] md:text-2xl">
+            {profile.role}
+          </p>
+          <p class="mt-6 max-w-xl text-base leading-7 text-[#A1A1A1] md:text-lg">
+            {profile.value_statement}
+          </p>
+
+          <div class="mt-8 flex flex-wrap items-center gap-3">
             <a
-              href={item.href}
-              class="text-sm text-[#A1A1A1] transition-colors hover:text-[#F5F5F5]"
+              href="#contact"
+              class="inline-flex items-center justify-center rounded-full border border-[#7DD3A7]/40 bg-[#7DD3A7]/10 px-5 py-3 text-sm font-medium text-[#F5F5F5] transition-colors hover:bg-[#7DD3A7]/15"
             >
-              {item.label}
+              Get in Touch
+              <ArrowUpRight className="ml-2 h-4 w-4" />
             </a>
-          ))}
-        </nav>
-
-        <div class="hidden items-center gap-2 md:flex">
-          {socials.slice(0, 3).map((social) => (
             <a
-              href={social.url}
-              target={social.url.startsWith('http') ? '_blank' : undefined}
-              rel={social.url.startsWith('http') ? 'noreferrer' : undefined}
-              class="flex h-9 w-9 items-center justify-center rounded-md border border-[#262626] bg-[#111111] text-[#D4D4D4] transition-colors hover:border-[#3a3a3a] hover:text-[#F5F5F5]"
-              aria-label={social.platform}
+              href="/resume.pdf"
+              class="inline-flex items-center justify-center rounded-full border border-[#262626] bg-[#111111] px-5 py-3 text-sm font-medium text-[#F5F5F5] transition-colors hover:border-[#3a3a3a] hover:bg-[#161616]"
             >
-              <span class="mono text-[10px] uppercase">{social.platform.slice(0, 2)}</span>
+              Download CV
             </a>
-          ))}
-        </div>
-
-        <div class="md:hidden">
-          <MobileNav client:visible items={navItems} />
-        </div>
-      </div>
-    </header>
-
-    <main id="top" class="relative z-10 mx-auto max-w-[1280px] px-4 pb-16 pt-12 sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
-      <section class="pb-16 md:pb-20 lg:pb-24">
-        <div class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
-          <div>
-            <p class="mono text-[11px] font-medium uppercase tracking-[0.26em] text-[#7DD3A7]">Software Engineer / Systems</p>
-            <h1 class="mt-6 max-w-[18ch] text-5xl font-black uppercase leading-[0.88] tracking-[-0.09em] text-[#F5F5F5] sm:text-6xl lg:text-7xl">
-              Farrel Apriandry
-            </h1>
-            <p class="mt-5 text-xl font-medium text-[#D4D4D4] md:text-2xl">
-              {profile.role}
-            </p>
-            <p class="mt-6 max-w-xl text-base leading-7 text-[#A1A1A1] md:text-lg">
-              {profile.value_statement}
-            </p>
-
-            <div class="mt-8 flex flex-wrap gap-3">
-              {actionLinks.map((link) => (
-                'kind' in link && link.kind === 'modal' ? (
-                  <ResumeModal client:idle content={resumeMarkdown} />
-                ) : (
-                  <a
-                    href={link.href}
-                    target={link.external ? '_blank' : undefined}
-                    rel={link.external ? 'noreferrer' : undefined}
-                    class="inline-flex items-center justify-center rounded-md border border-[#262626] bg-[#111111] px-4 py-2 text-sm font-medium text-[#F5F5F5] transition-colors hover:border-[#3a3a3a] hover:bg-[#161616]"
-                  >
-                    {link.label}
-                  </a>
-                )
-              ))}
-            </div>
+            <ResumeModal client:idle content={resumeMarkdown} />
           </div>
 
-          <aside class="rounded-2xl border border-[#262626] bg-[#111111] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-            <div class="flex items-center justify-between border-b border-[#262626] pb-3">
-              <p class="mono text-[10px] font-medium uppercase tracking-[0.22em] text-[#A1A1A1]">Short Information</p>
-              <!-- <span class="inline-flex items-center gap-2 mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">
-                <span class="h-2 w-2 rounded-full bg-[#7DD3A7]" aria-hidden="true" />
-                Active
-              </span> -->
+          <div class="mt-6 flex flex-wrap gap-3">
+            {heroSocialLinks.map((link) => {
+              const Icon = link.icon;
+
+              return (
+                <a
+                  href={link.href}
+                  target={link.href.startsWith('http') ? '_blank' : undefined}
+                  rel={link.href.startsWith('http') ? 'noreferrer' : undefined}
+                  aria-label={link.label}
+                  class="group inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#262626] bg-[#111111] text-[#D4D4D4] transition-colors hover:border-[#3a3a3a] hover:text-[#F5F5F5]"
+                >
+                  <Icon className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
+                </a>
+              );
+            })}
+          </div>
+        </div>
+
+        <aside class="rounded-3xl border border-[#262626] bg-[#111111] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
+          <div class="flex items-center justify-between border-b border-[#262626] pb-3">
+            <p class="mono text-[10px] font-medium uppercase tracking-[0.22em] text-[#A1A1A1]">System Panel</p>
+            <span class="inline-flex items-center gap-2 mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">
+              <span class="h-2 w-2 rounded-full bg-[#7DD3A7]" aria-hidden="true" />
+              Active
+            </span>
+          </div>
+
+          <div class="mt-5 space-y-5">
+            <div>
+              <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Building</p>
+              <p class="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[#F5F5F5]">{profile.status}</p>
             </div>
 
-            <div class="mt-5 space-y-5">
-              <div>
-                <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Building</p>
-                <p class="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[#F5F5F5]">{profile.status}</p>
-              </div>
-
-              <div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
                 <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Stack</p>
                 <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">TypeScript / Node.js / PostgreSQL</p>
               </div>
-
-              <div>
+              <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
                 <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Focus</p>
-                <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">Full-Stack Systems</p>
+                <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">Systems, products, and developer tooling</p>
               </div>
+            </div>
 
-              <div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
                 <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Location</p>
                 <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">{profile.location}</p>
               </div>
+              <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
+                <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Email</p>
+                <p class="mt-2 break-all text-sm leading-6 text-[#D4D4D4]">{profile.email}</p>
+              </div>
             </div>
-          </aside>
-        </div>
-      </section>
-
-      <section id="work" class="pb-16 md:pb-20 lg:pb-24">
-        <div class="mb-8 flex items-end justify-between gap-4 border-b border-[#262626] pb-4">
-          <div>
-            <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Selected Work</p>
-            <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Projects built across systems, software, and tools.</h2>
           </div>
-        </div>
+        </aside>
+      </div>
+    </section>
 
-        {featuredProject ? (
-          <article class="rounded-2xl border border-[#262626] bg-[#111111] p-4 sm:p-6">
-            <div class="rounded-xl border border-[#262626] bg-[#0d0d0d] p-4 sm:p-6">
-              <div class="flex items-center justify-between border-b border-[#262626] pb-3">
-                <span class="mono text-[10px] uppercase tracking-[0.2em] text-[#A1A1A1]">Featured Project</span>
-                <span class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">{featuredProject.year}</span>
-              </div>
+    <ProjectExplorer client:visible projects={projects} />
 
-              <div class="mt-5 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-                <div class="flex min-h-[260px] flex-col justify-between rounded-xl border border-[#262626] bg-[radial-gradient(circle_at_top_left,rgba(125,211,167,0.12),transparent_35%),linear-gradient(180deg,#171717,#0d0d0d)] p-5">
-                  <div class="space-y-3">
-                    <p class="mono text-[10px] uppercase tracking-[0.26em] text-[#A1A1A1]">Project Visual</p>
-                    <p class="max-w-[12ch] text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5]">{featuredProject.title}</p>
-                  </div>
+    <GitHubActivity client:idle username="FarrelApriandry" />
 
-                  <div class="flex items-center justify-between gap-4 border-t border-[#262626] pt-4">
-                    <div>
-                      <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#737373]">Category</p>
-                      <p class="mt-1 text-sm text-[#D4D4D4]">{featuredProject.category}</p>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                      {featuredProject.technologies.slice(0, 3).map((technology) => (
-                        <span class="mono rounded-full border border-[#262626] px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-[#A1A1A1]">
-                          {technology}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+    <section id="tech-stack" className="pb-16 md:pb-20 lg:pb-24">
+      <div class="mb-8 border-b border-[#262626] pb-4">
+        <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Tech Stack</p>
+        <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">System thinking, product building, and technical depth.</h2>
+      </div>
 
-                <div class="flex flex-col justify-between">
-                  <div>
-                    <p class="mono text-[10px] uppercase tracking-[0.2em] text-[#A1A1A1]">{featuredProject.category}</p>
-                    <h3 class="mt-3 text-2xl font-semibold tracking-[-0.05em] text-[#F5F5F5]">{featuredProject.title}</h3>
-                    <p class="mt-3 text-sm uppercase tracking-[0.12em] text-[#7DD3A7]">{featuredProject.role}</p>
-                    <p class="mt-4 text-base leading-7 text-[#A1A1A1]">{featuredProject.summary}</p>
-                  </div>
+      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+        {skillGroups.map((group) => (
+          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-5 transition-colors hover:border-[#3a3a3a]">
+            <p class="mono text-[10px] uppercase tracking-[0.2em] text-[#A1A1A1]">{group.label}</p>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              {group.items.map((item) => (
+                <li class="rounded-full border border-[#262626] bg-[#0A0A0A] px-3 py-2 text-sm text-[#D4D4D4]">{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
 
-                  <div class="mt-5 flex flex-wrap gap-3">
-                    {featuredProject.links ? Object.entries(featuredProject.links).map(([key, value]) => (
-                      <a
-                        href={value}
-                        target="_blank"
-                        rel="noreferrer"
-                        class="inline-flex items-center rounded-md border border-[#262626] px-3 py-2 text-sm text-[#F5F5F5] transition-colors hover:border-[#3a3a3a] hover:bg-[#161616]"
-                      >
-                        {key === 'code' ? 'Case Study' : key === 'demo' ? 'Live Demo' : key}
-                      </a>
-                    )) : null}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-        ) : null}
+      <div class="mt-8 rounded-3xl border border-[#262626] bg-[#111111] p-6 md:p-8">
+        <p class="max-w-4xl text-xl leading-8 text-[#D4D4D4] md:text-2xl">
+          I prefer understanding the system behind the interface. From APIs and databases to networking and infrastructure, I enjoy building software as a complete system rather than treating the frontend as an isolated product.
+        </p>
+      </div>
+    </section>
 
-        <div class="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {supportingProjects.map((project) => (
-            <article class="group rounded-2xl border border-[#262626] bg-[#111111] p-4 transition-colors hover:border-[#3a3a3a]">
-              <div class="flex items-center justify-between border-b border-[#262626] pb-3">
-                <span class="mono text-[10px] uppercase tracking-[0.18em] text-[#A1A1A1]">{project.year}</span>
-                <span class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">{project.category}</span>
-              </div>
+    <section id="writing" class="pb-16 md:pb-20 lg:pb-24">
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <div>
+          <div class="mb-8 border-b border-[#262626] pb-4">
+            <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Writing</p>
+            <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Notes on systems, process, and technical thinking.</h2>
+          </div>
 
-              <div class="mt-4">
-                <h3 class="text-xl font-semibold tracking-[-0.05em] text-[#F5F5F5]">{project.title}</h3>
-                <p class="mt-2 text-sm uppercase tracking-[0.12em] text-[#A1A1A1]">{project.role}</p>
-                <p class="mt-4 text-sm leading-6 text-[#A1A1A1]">{project.summary}</p>
-              </div>
-
-              <div class="mt-5 flex flex-wrap gap-2">
-                {project.technologies.slice(0, 3).map((technology) => (
-                  <span class="mono rounded-full border border-[#262626] px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-[#A1A1A1]">
-                    {technology}
-                  </span>
-                ))}
-              </div>
-
-              <div class="mt-5 flex gap-3">
-                {project.links ? Object.entries(project.links).slice(0, 2).map(([key, value]) => (
-                  <a
-                    href={value}
-                    target="_blank"
-                    rel="noreferrer"
-                    class="text-sm text-[#F5F5F5] underline decoration-[#7DD3A7]/40 underline-offset-4 transition-colors hover:text-[#7DD3A7]"
-                  >
-                    {key === 'code' ? 'Code' : key === 'demo' ? 'Demo' : key}
-                  </a>
-                )) : null}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="engineering" class="pb-16 md:pb-20 lg:pb-24">
-        <div class="mb-8 border-b border-[#262626] pb-4">
-          <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Engineering</p>
-          <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">System thinking, product building, and technical depth.</h2>
-        </div>
-
-        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
-          {skillGroups.map((group) => (
-            <div class="rounded-2xl border border-[#262626] bg-[#111111] p-4">
-              <p class="mono text-[10px] uppercase tracking-[0.2em] text-[#A1A1A1]">{group.label}</p>
-              <ul class="mt-4 space-y-2 text-sm text-[#D4D4D4]">
-                {group.items.map((item) => (
-                  <li>{item}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        <div class="mt-8 rounded-2xl border border-[#262626] bg-[#111111] p-6 md:p-8">
-          <p class="max-w-3xl text-xl leading-8 text-[#D4D4D4] md:text-2xl">
-            I prefer understanding the system behind the interface. From APIs and databases to networking and infrastructure, I enjoy building software as a complete system rather than treating the frontend as an isolated product.
-          </p>
-        </div>
-      </section>
-
-      <section id="notes" class="pb-16 md:pb-20 lg:pb-24">
-        <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <div>
-            <div class="mb-8 border-b border-[#262626] pb-4">
-              <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Engineering Notes</p>
-              <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Writing on systems, process, and technical thinking.</h2>
-            </div>
-
-            <div class="space-y-3">
-              {engineeringNotes.map((note) => (
-                <a href="#" class="group flex items-center gap-4 rounded-xl border border-[#262626] bg-[#111111] px-4 py-4 transition-colors hover:border-[#3a3a3a] hover:bg-[#161616]">
+          <div class="grid gap-3">
+            {engineeringNotes.map((note) => (
+              <a
+                href={note.href}
+                class="group rounded-2xl border border-[#262626] bg-[#111111] p-4 transition-all hover:-translate-y-0.5 hover:border-[#3a3a3a] hover:bg-[#161616]"
+              >
+                <div class="flex items-start gap-4">
                   <span class="mono min-w-[2.5rem] text-sm text-[#7DD3A7]">{note.id}</span>
                   <div class="min-w-0 flex-1">
-                    <p class="truncate text-base font-medium text-[#F5F5F5]">{note.title}</p>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="mono rounded-full border border-[#262626] bg-[#0A0A0A] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">
+                        {note.badge}
+                      </span>
+                      <span class="mono text-[10px] uppercase tracking-[0.16em] text-[#737373]">Editorial note</span>
+                    </div>
+                    <p class="mt-3 text-base font-medium text-[#F5F5F5]">{note.title}</p>
                     <p class="mt-1 mono text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">{note.meta}</p>
                   </div>
-                  <span class="text-lg text-[#A1A1A1] transition-transform group-hover:translate-x-1 group-hover:text-[#F5F5F5]">→</span>
-                </a>
+                  <ExternalLink className="mt-1 h-4 w-4 text-[#A1A1A1] transition-transform group-hover:-translate-y-0.5 group-hover:text-[#F5F5F5]" />
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-8 border-b border-[#262626] pb-4">
+            <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Currently Building</p>
+            <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Active projects and learning.</h2>
+          </div>
+
+          <div class="grid gap-3">
+            {currentlyBuilding.map((item) => (
+              <div class="rounded-2xl border border-[#262626] bg-[#111111] p-4">
+                <p class="mono text-[10px] uppercase tracking-[0.2em] text-[#7DD3A7]">{item.id}</p>
+                <p class="mt-2 text-xl font-medium text-[#F5F5F5]">{item.title}</p>
+                <p class="mt-2 mono text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">{item.meta}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="pb-16 md:pb-20 lg:pb-24">
+      <div class="mb-8 border-b border-[#262626] pb-4">
+        <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">About</p>
+        <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Short bio, education, and recognition.</h2>
+      </div>
+
+      <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+        <div class="space-y-8">
+          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="mono rounded-full border border-[#1f3f2b] bg-[#0f1b14] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-[#7DD3A7]">
+                Bio
+              </span>
+              <span class="mono rounded-full border border-[#262626] bg-[#0A0A0A] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">
+                {profile.status}
+              </span>
+            </div>
+            <p class="mt-5 max-w-3xl text-lg leading-8 text-[#D4D4D4] md:text-xl">
+              {profile.value_statement}
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
+            <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Experience</p>
+            <div class="mt-5 space-y-5">
+              {experiences.slice(0, 4).map((experience) => (
+                <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
+                  <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+                    <p class="text-base font-medium text-[#F5F5F5]">{experience.role}</p>
+                    <span class="mono text-[10px] uppercase tracking-[0.14em] text-[#A1A1A1]">{experience.period}</span>
+                  </div>
+                  <p class="mt-1 text-sm text-[#A1A1A1]">{experience.company}</p>
+                  <p class="mt-3 text-sm leading-6 text-[#D4D4D4]">{experience.description}</p>
+                </div>
               ))}
             </div>
           </div>
 
-          <div>
-            <div class="mb-8 border-b border-[#262626] pb-4">
-              <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Currently Building</p>
-              <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Active projects and learning.</h2>
-            </div>
-
-            <div class="space-y-3">
-              {currentlyBuilding.map((item) => (
-                <div class="rounded-xl border border-[#262626] bg-[#111111] p-4">
-                  <p class="mono text-[10px] uppercase tracking-[0.2em] text-[#7DD3A7]">{item.id}</p>
-                  <p class="mt-2 text-xl font-medium text-[#F5F5F5]">{item.title}</p>
-                  <p class="mt-2 mono text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">{item.meta}</p>
+          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
+            <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Education</p>
+            <div class="mt-5 space-y-4">
+              {educations.map((education) => (
+                <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
+                  <div class="flex items-baseline justify-between gap-4">
+                    <p class="text-base font-medium text-[#F5F5F5]">{education.institution}</p>
+                    <span class="mono text-[10px] uppercase tracking-[0.12em] text-[#A1A1A1]">{education.period}</span>
+                  </div>
+                  <p class="mt-1 text-sm text-[#D4D4D4]">{education.degree}</p>
+                  {education.details ? <p class="mt-2 text-sm leading-6 text-[#A1A1A1]">{education.details}</p> : null}
                 </div>
               ))}
             </div>
           </div>
         </div>
-      </section>
 
-      <section id="about" class="pb-16 md:pb-20 lg:pb-24">
-        <div class="mb-8 border-b border-[#262626] pb-4">
-          <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">About</p>
-          <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Short bio, education, and recognition.</h2>
-        </div>
-
-        <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-          <div>
-            <p class="max-w-2xl text-lg leading-8 text-[#D4D4D4] md:text-xl">
-              I'm a Software Engineering student interested in building reliable software systems — from interfaces and APIs to the infrastructure running behind them.
-            </p>
-
-            <div class="mt-8 rounded-2xl border border-[#262626] bg-[#111111] p-5">
-              <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Experience</p>
-              <div class="mt-5 space-y-5">
-                {experiences.slice(0, 4).map((experience) => (
-                  <div class="border-b border-[#262626] pb-4 last:border-b-0 last:pb-0">
-                    <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-                      <p class="text-base font-medium text-[#F5F5F5]">{experience.role}</p>
-                      <span class="mono text-[10px] uppercase tracking-[0.14em] text-[#A1A1A1]">{experience.period}</span>
-                    </div>
-                    <p class="mt-1 text-sm text-[#A1A1A1]">{experience.company}</p>
-                    <p class="mt-3 text-sm leading-6 text-[#D4D4D4]">{experience.description}</p>
-                  </div>
-                ))}
-              </div>
+        <div class="space-y-8">
+          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
+            <div class="flex items-center justify-between gap-3">
+              <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Recognition</p>
+              <span class="mono text-[10px] uppercase tracking-[0.16em] text-[#737373]">Awards</span>
             </div>
 
-            <div class="mt-8 rounded-2xl border border-[#262626] bg-[#111111] p-5">
-              <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Education</p>
-              <div class="mt-5 space-y-4">
-                {educations.map((education) => (
-                  <div>
-                    <div class="flex items-baseline justify-between gap-4">
-                      <p class="text-base font-medium text-[#F5F5F5]">{education.institution}</p>
-                      <span class="mono text-[10px] uppercase tracking-[0.12em] text-[#A1A1A1]">{education.period}</span>
+            <div class="mt-5 grid gap-3">
+              {awards.map((award) => (
+                <article class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="mono rounded-full border border-[#262626] bg-[#111111] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-[#A1A1A1]">
+                          Award
+                        </span>
+                        <span class="mono rounded-full border border-[#1f3f2b] bg-[#0f1b14] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-[#7DD3A7]">
+                          {award.year}
+                        </span>
+                      </div>
+                      <p class="mt-3 text-base font-medium text-[#F5F5F5]">{award.title}</p>
+                      <p class="mt-1 text-sm text-[#A1A1A1]">{award.issuer}</p>
+                      <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">{award.description}</p>
                     </div>
-                    <p class="mt-1 text-sm text-[#D4D4D4]">{education.degree}</p>
-                    {education.details ? <p class="mt-2 text-sm leading-6 text-[#A1A1A1]">{education.details}</p> : null}
+
+                    {award.link ? (
+                      <a
+                        href={award.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#262626] text-[#A1A1A1] transition-colors hover:border-[#3a3a3a] hover:text-[#F5F5F5]"
+                        aria-label={`Open ${award.title}`}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    ) : null}
                   </div>
-                ))}
-              </div>
+                </article>
+              ))}
             </div>
           </div>
 
-          <div class="space-y-8">
-            <div class="rounded-2xl border border-[#262626] bg-[#111111] p-5">
-              <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Recognitions</p>
-              <div class="mt-5 space-y-4">
-                {awards.map((award) => (
-                  <div class="border-b border-[#262626] pb-3 last:border-b-0 last:pb-0">
-                    <div class="flex items-start justify-between gap-4">
-                      <p class="text-base font-medium text-[#F5F5F5]">{award.title}</p>
-                      <span class="mono text-[10px] uppercase tracking-[0.12em] text-[#A1A1A1]">{award.year}</span>
-                    </div>
-                    <p class="mt-1 text-sm text-[#A1A1A1]">{award.issuer}</p>
-                    <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">{award.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div class="rounded-2xl border border-[#262626] bg-[#111111] p-5">
+          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
+            <div class="flex items-center justify-between gap-3">
               <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Intellectual Property</p>
-              <div class="mt-5 space-y-4">
-                {intellectualProperties.map((item) => (
-                  <div class="border-b border-[#262626] pb-3 last:border-b-0 last:pb-0">
-                    <div class="flex items-start justify-between gap-4">
-                      <p class="text-base font-medium text-[#F5F5F5]">{item.title}</p>
-                      <span class="mono text-[10px] uppercase tracking-[0.12em] text-[#A1A1A1]">{item.year}</span>
+              <span class="mono text-[10px] uppercase tracking-[0.16em] text-[#737373]">HKI</span>
+            </div>
+
+            <div class="mt-5 grid gap-3">
+              {intellectualProperties.map((item) => (
+                <article class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="mono rounded-full border border-[#262626] bg-[#111111] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-[#A1A1A1]">
+                          {item.type}
+                        </span>
+                        <span class="mono rounded-full border border-[#1f3f2b] bg-[#0f1b14] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-[#7DD3A7]">
+                          {item.year}
+                        </span>
+                      </div>
+                      <p class="mt-3 text-base font-medium text-[#F5F5F5]">{item.title}</p>
+                      <p class="mt-1 text-sm text-[#A1A1A1]">{item.issuer}</p>
+                      <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">{item.description}</p>
                     </div>
-                    <p class="mt-1 text-sm text-[#A1A1A1]">{item.type}</p>
-                    <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">{item.description}</p>
+
+                    {item.link ? (
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#262626] text-[#A1A1A1] transition-colors hover:border-[#3a3a3a] hover:text-[#F5F5F5]"
+                        aria-label={`Open ${item.title}`}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    ) : null}
                   </div>
-                ))}
-              </div>
+                </article>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="border-t border-[#262626] bg-[#0A0A0A]">
-      <div class="mx-auto flex max-w-[1280px] flex-col gap-5 px-4 py-8 text-sm text-[#A1A1A1] sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-        <div class="flex flex-wrap items-center gap-4">
-          {navItems.map((item) => (
-            <a href={item.href} class="transition-colors hover:text-[#F5F5F5]">{item.label}</a>
-          ))}
-        </div>
-
-        <div class="mono text-[10px] uppercase tracking-[0.18em] text-[#737373]">
-          © {currentYear} Farrel Apriandry
         </div>
       </div>
-    </footer>
-  </div>
+    </section>
+  </main>
+
+  <Footer year={currentYear} links={navItems} email={profile.email} socials={footerSocialLinks} />
 </Layout>

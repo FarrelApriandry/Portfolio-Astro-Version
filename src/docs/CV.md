@@ -85,7 +85,7 @@ Adaptable Software Engineering Subject Matter Expert and Full-Stack Engineer spe
 # **Featured Projects & Honors**
 
 * **HAKI-Untidar:** Institutional IP registration web platform (Astro, Express, PostgreSQL, Prisma, Docker).  
-* **Nusantara:** Pasar Bubrah: P2MW National Grant-funded interactive game (Unreal Engine 5, Blueprints, Blender).  
+* **Nusantara: Pasar Bubrah**: P2MW National Grant-funded interactive game (Unreal Engine 5, Blueprints, Blender).  
 * **GolekDuit:** Automated IDX stock analysis data pipeline & Telegram bot (Python, Pandas, TA-Lib).  
 * **Web-VocaTIonal:** Student grievance reporting system with encrypted tracking (PHP Native, MySQL, Docker, Tailwind CSS).  
 * **Meragement:** Real-time collaborative workspace platform (Astro Islands, React, Firebase Firestore).  

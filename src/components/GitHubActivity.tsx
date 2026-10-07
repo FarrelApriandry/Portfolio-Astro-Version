@@ -4,7 +4,10 @@ import type { Activity } from 'react-activity-calendar';
 import 'react-activity-calendar/tooltips.css';
 import { Activity as ActivityIcon, ArrowUpRight, Flame, Trophy } from 'lucide-react';
 
-const API_BASE = 'https://github-contributions-api.jogruber.de/v4';
+// Served via our own /api/github-activity proxy (edge-cached 6h) so a
+// third-party outage degrades to a cached/empty graph instead of a
+// client-side error, and the username can't be tampered with client-side.
+const API_BASE = '/api/github-activity';
 
 // Five-level green ramp tuned to the site palette:
 // surface-elevated -> accent-dark ramp -> accent (#7DD3A7)
@@ -85,7 +88,7 @@ export default function GitHubActivity({ username }: GitHubActivityProps) {
     let cancelled = false;
     setStatus('loading');
 
-    fetch(`${API_BASE}/${username}?y=${year}`)
+    fetch(`${API_BASE}?y=${year}`)
       .then((response) => {
         if (!response.ok) throw new Error(`GitHub activity API responded with ${response.status}`);
         return response.json() as Promise<{ contributions?: Activity[] }>;

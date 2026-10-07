@@ -2,7 +2,7 @@
 import { ArrowUpRight, ExternalLink, Github, Linkedin, Mail, Rss } from 'lucide-react';
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.tsx';
-import ProjectExplorer from '../components/ProjectExplorer.tsx';
+import ProjectExplorer, { toCardData } from '../components/ProjectExplorer.tsx';
 import GitHubActivity from '../components/GitHubActivity.tsx';
 import ResumeModal from '../components/ResumeModal.tsx';
 import Footer from '../components/Footer.astro';
@@ -55,6 +55,15 @@ const currentlyBuilding = [
 ];
 
 const currentYear = new Date().getFullYear();
+
+// CDN-cache the public homepage (admin edits go live within ~10 min).
+// Degraded fallback snapshots must never be cached — error banner data.
+Astro.response.headers.set(
+  'Cache-Control',
+  degraded
+    ? 'no-store'
+    : 'public, s-maxage=600, stale-while-revalidate=86400',
+);
 ---
 
 <Layout title={`${profile.name} | ${profile.role}`} description={profile.value_statement}>
@@ -159,7 +168,7 @@ const currentYear = new Date().getFullYear();
       </div>
     </section>
 
-    <ProjectExplorer client:visible projects={projects} />
+    <ProjectExplorer client:visible projects={projects.map(toCardData)} />
 
     <GitHubActivity client:idle username="FarrelApriandry" />
 

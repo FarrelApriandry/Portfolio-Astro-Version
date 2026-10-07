@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import type { Components } from 'react-markdown';
-import ReactMarkdown from 'react-markdown';
+
+// react-markdown is heavy (~100KB) and only needed when the user opens
+// the modal — split it into its own chunk loaded on first open.
+const ReactMarkdown = lazy(() => import('react-markdown'));
 
 type ResumeModalProps = {
   content: string;
@@ -93,7 +96,15 @@ export default function ResumeModal({ content }: ResumeModalProps) {
               <div className="rounded-xl border border-[#262626] bg-[#0A0A0A] p-5">
                 {content.trim() ? (
                   <div className="space-y-4">
-                    <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
+                    <Suspense
+                      fallback={
+                        <p className="mono text-[11px] uppercase tracking-[0.16em] text-[#737373]">
+                          Loading resume…
+                        </p>
+                      }
+                    >
+                      <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
+                    </Suspense>
                   </div>
                 ) : (
                   <p className="text-sm leading-7 text-[#A1A1A1]">CV markdown belum diisi.</p>

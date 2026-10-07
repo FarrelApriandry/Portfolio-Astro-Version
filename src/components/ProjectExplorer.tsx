@@ -2,53 +2,58 @@ import { useMemo, useState } from 'react';
 import { Code2, ExternalLink, Filter, Gamepad2, ImageOff, Layers3, TerminalSquare } from 'lucide-react';
 import type { Project } from '../lib/db';
 
-type FilterKey = 'All' | 'Web & Systems' | 'Game Dev' | 'Tools / CLI';
+export type FilterKey = 'All' | 'Web & Systems' | 'Game Dev' | 'Tools / CLI';
 
-type ProjectExplorerProps = {
-  projects: Project[];
+/**
+ * Slim card payload — only what the explorer renders. Built server-side
+ * via toCardData() so heavy case-study fields (problem/solution/gallery)
+ * never ship in island props. bucket/impact are precomputed, so the
+ * client only filters.
+ */
+export type ProjectCardData = Pick<
+  Project,
+  'id' | 'title' | 'year' | 'category' | 'role' | 'summary' | 'technologies' | 'image' | 'alt' | 'featured' | 'links'
+> & {
+  impact: string;
+  bucket: FilterKey;
 };
 
-type ProjectWithBucket = Project & {
-  bucket: FilterKey;
-  impact: string;
+type ProjectExplorerProps = {
+  projects: ProjectCardData[];
 };
 
 const filters: FilterKey[] = ['All', 'Web & Systems', 'Game Dev', 'Tools / CLI'];
 
-function bucketProject(project: Project): FilterKey {
-  const haystack = [
-    project.title,
-    project.category,
-    project.summary,
-    project.problem,
-    project.solution,
-    project.role,
-    project.technologies.join(' '),
-    project.architecture_notes,
-    project.gallery.join(' '),
-  ]
+export function toCardData(project: Project): ProjectCardData {
+  const haystack = [project.title, project.category, project.summary, project.role, project.technologies.join(' ')]
     .join(' ')
     .toLowerCase();
-
-  if (haystack.includes('game') || haystack.includes('unreal') || haystack.includes('blueprint') || haystack.includes('c++')) {
-    return 'Game Dev';
-  }
-
-  if (
-    haystack.includes('cli') ||
-    haystack.includes('tool') ||
-    haystack.includes('bot') ||
-    haystack.includes('automation') ||
-    haystack.includes('pipeline')
-  ) {
-    return 'Tools / CLI';
-  }
-
-  return 'Web & Systems';
+  const bucket: FilterKey =
+    haystack.includes('game') || haystack.includes('unreal') || haystack.includes('blueprint') || haystack.includes('c++')
+      ? 'Game Dev'
+      : haystack.includes('cli') ||
+          haystack.includes('tool') ||
+          haystack.includes('bot') ||
+          haystack.includes('automation') ||
+          haystack.includes('pipeline')
+        ? 'Tools / CLI'
+        : 'Web & Systems';
+  const impact =
+    project.architecture_notes ||
+    project.role_responsibilities[0] ||
+    project.summary.split('.')[0] ||
+    'System-level product work';
+  const { id, title, year, category, role, summary, technologies, image, alt, featured, links } = project;
+  return { id, title, year, category, role, summary, technologies, image: normalizeImage(image), alt, featured, links, impact, bucket };
 }
 
-function projectImpact(project: Project) {
-  return project.architecture_notes || project.role_responsibilities[0] || project.summary.split('.')[0] || 'System-level product work';
+/** DB stores relative asset paths ("assets/..." without leading slash) or
+ * absolute URLs. Normalize + drop paths that don't exist in public/. */
+function normalizeImage(image: string | null): string | null {
+  if (!image) return null;
+  if (/^https?:\/\//.test(image)) return image;
+  const withSlash = image.startsWith('/') ? image : `/${image}`;
+  return withSlash;
 }
 
 function labelLink(key: string) {
@@ -72,15 +77,18 @@ function bucketIcon(bucket: FilterKey) {
   }
 }
 
-function ProjectVisual({ project }: { project: ProjectWithBucket }) {
+function ProjectVisual({ project }: { project: ProjectCardData }) {
   if (project.image) {
     return (
       <div className="relative overflow-hidden rounded-2xl border border-[#262626] bg-[#0A0A0A]">
         <img
           src={project.image}
           alt={project.alt || project.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          className="aspect-[16/9] h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           loading="lazy"
+          decoding="async"
+          width={640}
+          height={360}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
       </div>
@@ -110,7 +118,7 @@ function ProjectVisual({ project }: { project: ProjectWithBucket }) {
   );
 }
 
-function ProjectCard({ project, featured = false }: { project: ProjectWithBucket; featured?: boolean }) {
+function ProjectCard({ project, featured = false }: { project: ProjectCardData; featured?: boolean }) {
   return (
     <article
       className={[
@@ -144,7 +152,7 @@ function ProjectCard({ project, featured = false }: { project: ProjectWithBucket
 
         <div className="mt-5 rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
           <p className="mono text-[10px] uppercase tracking-[0.18em] text-[#A1A1A1]">Impact</p>
-          <p className="mt-2 text-sm leading-6 text-[#F5F5F5]">{projectImpact(project)}</p>
+          <p className="mt-2 text-sm leading-6 text-[#F5F5F5]">{project.impact}</p>
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
@@ -177,24 +185,15 @@ function ProjectCard({ project, featured = false }: { project: ProjectWithBucket
 }
 
 export default function ProjectExplorer({ projects }: ProjectExplorerProps) {
-  const normalizedProjects = useMemo<ProjectWithBucket[]>(
-    () =>
-      projects.map((project) => ({
-        ...project,
-        bucket: bucketProject(project),
-        impact: projectImpact(project),
-      })),
-    [projects]
-  );
-
+  // bucket/impact precomputed server-side by toCardData() — client only filters.
   const [activeFilter, setActiveFilter] = useState<FilterKey>('All');
 
   const filteredProjects = useMemo(
-    () => (activeFilter === 'All' ? normalizedProjects : normalizedProjects.filter((project) => project.bucket === activeFilter)),
-    [activeFilter, normalizedProjects]
+    () => (activeFilter === 'All' ? projects : projects.filter((project) => project.bucket === activeFilter)),
+    [activeFilter, projects]
   );
 
-  const featuredProject = filteredProjects.find((project) => project.featured) ?? filteredProjects[0] ?? normalizedProjects[0];
+  const featuredProject = filteredProjects.find((project) => project.featured) ?? filteredProjects[0] ?? projects[0];
   const supportingProjects = filteredProjects.filter((project) => project.id !== featuredProject?.id).slice(0, 4);
 
   return (

@@ -79,7 +79,13 @@ const personSchema = {
     <SpeedInsights />
   </head>
   <body class="bg-[#0A0A0A] text-[#F5F5F5] antialiased selection:bg-[#7DD3A7]/20 selection:text-[#F5F5F5]">
-    <div class="relative z-10">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:border focus:border-[#7DD3A7]/40 focus:bg-[#111111] focus:px-4 focus:py-2 focus:text-sm focus:text-[#F5F5F5]"
+    >
+      Skip to content
+    </a>
+    <div class="relative z-10" id="main-content">
       <slot />
     </div>
   </body>

@@ -7,7 +7,7 @@
   --border: #262626;
   --primary-text: #f5f5f5;
   --secondary-text: #a1a1a1;
-  --muted-text: #737373;
+  --muted-text: #8a8a8a;
   --accent: #7dd3a7;
   --accent-dark: #3f8f70;
 }
@@ -60,8 +60,36 @@ p, li, a, span, div {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Anchor sections clear the sticky navbar */
+section[id],
+footer[id] {
+  scroll-margin-top: 6rem;
+}
+
+/* Muted text lifted from #737373 to #8a8a8a — the old value fails
+ * WCAG contrast at the 10-11px mono label sizes used across the site. */
 .mono {
   font-family: 'JetBrains Mono', 'SFMono-Regular', monospace;
+}
+
+/* Visible keyboard focus everywhere (a11y) */
+:focus-visible {
+  outline: 2px solid #7dd3a7;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Screen-reader-only utility for the skip link */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* GitHub activity calendar — tuned to the site palette */

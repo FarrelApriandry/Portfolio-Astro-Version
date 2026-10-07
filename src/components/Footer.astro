@@ -1,5 +1,6 @@
 ---
-import { ExternalLink, Mail } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
+import ContactForm from '../components/ContactForm.tsx';
 
 type LinkItem = {
   label: string;
@@ -36,13 +37,6 @@ const {
 
         <div class="mt-6 flex flex-wrap gap-3">
           <a
-            href={`mailto:${email}`}
-            class="inline-flex items-center gap-2 rounded-full border border-[#7DD3A7]/40 bg-[#7DD3A7]/10 px-4 py-2 text-sm font-medium text-[#F5F5F5] transition-colors hover:bg-[#7DD3A7]/15"
-          >
-            <Mail className="h-4 w-4" />
-            {email}
-          </a>
-          <a
             href="https://github.com/FarrelApriandry"
             target="_blank"
             rel="noreferrer"
@@ -51,7 +45,12 @@ const {
             GitHub
             <ExternalLink className="h-4 w-4" />
           </a>
+          <span class="mono inline-flex items-center rounded-full border border-[#262626] bg-[#0A0A0A] px-4 py-2 text-[11px] uppercase tracking-[0.14em] text-[#A1A1A1]">
+            Magelang, ID · UTC+7
+          </span>
         </div>
+
+        <ContactForm client:visible email={email} />
       </div>
 
       <div class="grid gap-6 sm:grid-cols-2">
@@ -89,7 +88,7 @@ const {
     </div>
 
     <div class="mt-8 flex flex-col gap-3 border-t border-[#262626] pt-5 sm:flex-row sm:items-center sm:justify-between">
-      <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#737373]">© {year} Farrel Apriandry. All rights reserved.</p>
+      <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#8a8a8a]">© {year} Farrel Apriandry. All rights reserved.</p>
       <p class="text-sm text-[#A1A1A1]">Built with Astro, React, Tailwind CSS, and Neon.</p>
     </div>
   </div>

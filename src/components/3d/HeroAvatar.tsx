@@ -33,7 +33,7 @@ function StaticPoster({ onEnable, webglMissing }: { onEnable: () => void; webglM
       >
         FA
       </div>
-      <p className="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Avatar // Static</p>
+      <p className="mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a8a]">Avatar // Static</p>
       {webglMissing ? (
         <p className="px-6 text-center text-sm text-[#A1A1A1]">WebGL tidak tersedia — panel statis dipakai.</p>
       ) : (
@@ -131,7 +131,7 @@ export default function HeroAvatar() {
           <Suspense
             fallback={
               <div className="flex h-full items-center justify-center">
-                <p className="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Loading 3D…</p>
+                <p className="mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a8a]">Loading 3D…</p>
               </div>
             }
           >
@@ -139,13 +139,13 @@ export default function HeroAvatar() {
           </Suspense>
         ) : (
           <div className="flex h-full items-center justify-center">
-            <p className="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">Paused off-screen</p>
+            <p className="mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a8a]">Paused off-screen</p>
           </div>
         )}
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent px-4 pb-3 pt-8">
-        <p className="mono text-[10px] uppercase tracking-[0.18em] text-[#737373]">Drag to orbit</p>
-        <p className="mono text-[10px] uppercase tracking-[0.18em] text-[#737373]">Y-up · Feet 0</p>
+        <p className="mono text-[10px] uppercase tracking-[0.18em] text-[#8a8a8a]">Drag to orbit</p>
+        <p className="mono text-[10px] uppercase tracking-[0.18em] text-[#8a8a8a]">Y-up · Feet 0</p>
       </div>
     </div>
   );

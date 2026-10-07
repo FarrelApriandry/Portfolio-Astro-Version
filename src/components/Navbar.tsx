@@ -19,12 +19,18 @@ export default function Navbar({ brand, items, contactHref, resumeHref }: Navbar
   useEffect(() => {
     if (!isOpen) return;
 
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setIsOpen(false);
     };
 
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
   }, [isOpen]);
 
   return (

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import type { Components } from 'react-markdown';
 
 // react-markdown is heavy (~100KB) and only needed when the user opens
@@ -37,6 +37,8 @@ const markdownComponents: Components = {
 
 export default function ResumeModal({ content }: ResumeModalProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -45,21 +47,48 @@ export default function ResumeModal({ content }: ResumeModalProps) {
     document.body.style.overflow = 'hidden';
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setIsOpen(false);
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+        return;
+      }
+      // Focus trap: keep Tab cycling inside the dialog.
+      if (event.key === 'Tab') {
+        const root = dialogRef.current;
+        if (!root) return;
+        const focusables = root.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+        );
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     };
 
     window.addEventListener('keydown', onKeyDown);
+    // Move focus into the dialog on open.
+    setTimeout(() => dialogRef.current?.querySelector<HTMLElement>('button')?.focus(), 0);
 
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', onKeyDown);
+      // Return focus to the trigger on close.
+      triggerRef.current?.focus();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   return (
     <>
       <button
         type="button"
+        ref={triggerRef}
         onClick={() => setIsOpen(true)}
         className="inline-flex items-center justify-center rounded-md border border-[#262626] bg-[#111111] px-4 py-2 text-sm font-medium text-[#F5F5F5] transition-colors hover:border-[#3a3a3a] hover:bg-[#161616]"
       >
@@ -69,6 +98,7 @@ export default function ResumeModal({ content }: ResumeModalProps) {
       {isOpen ? (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm" onClick={() => setIsOpen(false)}>
           <div
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="resume-modal-title"
@@ -98,7 +128,7 @@ export default function ResumeModal({ content }: ResumeModalProps) {
                   <div className="space-y-4">
                     <Suspense
                       fallback={
-                        <p className="mono text-[11px] uppercase tracking-[0.16em] text-[#737373]">
+                        <p className="mono text-[11px] uppercase tracking-[0.16em] text-[#8a8a8a]">
                           Loading resume…
                         </p>
                       }

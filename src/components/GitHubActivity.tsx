@@ -169,7 +169,7 @@ export default function GitHubActivity({ username }: GitHubActivityProps) {
               <div key={stat.label} className="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
                 <div className="flex items-center gap-2">
                   <Icon className="h-3.5 w-3.5 text-[#7DD3A7]" />
-                  <p className="mono text-[10px] uppercase tracking-[0.22em] text-[#737373]">{stat.label}</p>
+                  <p className="mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a8a]">{stat.label}</p>
                 </div>
                 <p className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[#F5F5F5]">
                   {status === 'loading' ? '—' : stat.value}
@@ -183,7 +183,7 @@ export default function GitHubActivity({ username }: GitHubActivityProps) {
           {status === 'error' ? (
             <div className="flex min-h-[180px] flex-col items-center justify-center gap-3 rounded-2xl border border-[#262626] bg-[#0A0A0A] p-6 text-center">
               <p className="text-sm text-[#D4D4D4]">Could not load the contribution graph right now.</p>
-              <p className="mono text-[11px] uppercase tracking-[0.16em] text-[#737373]">
+              <p className="mono text-[11px] uppercase tracking-[0.16em] text-[#8a8a8a]">
                 Check your connection, then try again
               </p>
               <button
@@ -196,7 +196,7 @@ export default function GitHubActivity({ username }: GitHubActivityProps) {
             </div>
           ) : status === 'ready' && data.length === 0 ? (
             <div className="flex min-h-[180px] items-center justify-center rounded-2xl border border-[#262626] bg-[#0A0A0A] p-6">
-              <p className="mono text-[11px] uppercase tracking-[0.16em] text-[#737373]">
+              <p className="mono text-[11px] uppercase tracking-[0.16em] text-[#8a8a8a]">
                 No contributions recorded in this period
               </p>
             </div>
@@ -234,7 +234,7 @@ export default function GitHubActivity({ username }: GitHubActivityProps) {
                   />
                 ))}
               </div>
-              <p className="mono mt-3 text-[10px] uppercase tracking-[0.16em] text-[#737373]">
+              <p className="mono mt-3 text-[10px] uppercase tracking-[0.16em] text-[#8a8a8a]">
                 Loading contributions…
               </p>
             </div>
@@ -243,7 +243,7 @@ export default function GitHubActivity({ username }: GitHubActivityProps) {
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[#262626] pt-4">
           <div className="flex items-center gap-2">
-            <span className="mono text-[10px] uppercase tracking-[0.16em] text-[#737373]">Less</span>
+            <span className="mono text-[10px] uppercase tracking-[0.16em] text-[#8a8a8a]">Less</span>
             <span className="flex items-center gap-1" aria-hidden="true">
               {THEME_DARK.map((color) => (
                 <span
@@ -253,9 +253,9 @@ export default function GitHubActivity({ username }: GitHubActivityProps) {
                 />
               ))}
             </span>
-            <span className="mono text-[10px] uppercase tracking-[0.16em] text-[#737373]">More</span>
+            <span className="mono text-[10px] uppercase tracking-[0.16em] text-[#8a8a8a]">More</span>
           </div>
-          <p className="mono text-[10px] uppercase tracking-[0.16em] text-[#737373]">
+          <p className="mono text-[10px] uppercase tracking-[0.16em] text-[#8a8a8a]">
             Live data · github.com/{username}
           </p>
         </div>

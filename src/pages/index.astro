@@ -42,10 +42,10 @@ const footerSocialLinks = [
 ];
 
 const engineeringNotes = [
-  { id: '01', title: 'Designing a Self-Hosted HomeLab', meta: 'Linux · Docker · Networking', href: '#contact', badge: 'Systems' },
-  { id: '02', title: 'Building a Real-Time System Monitoring Dashboard', meta: 'Node.js · WebSockets · Metrics', href: '#contact', badge: 'Observability' },
-  { id: '03', title: 'Structuring TypeScript Backend Services', meta: 'Architecture · API · PostgreSQL', href: '#contact', badge: 'Backend' },
-  { id: '04', title: 'What I Learned Building Nusantara', meta: 'Unreal Engine · Game Systems · Production', href: '#contact', badge: 'Game Dev' },
+  { id: '01', title: 'Designing a Self-Hosted HomeLab', meta: 'Linux · Docker · Networking', badge: 'Systems' },
+  { id: '02', title: 'Building a Real-Time System Monitoring Dashboard', meta: 'Node.js · WebSockets · Metrics', badge: 'Observability' },
+  { id: '03', title: 'Structuring TypeScript Backend Services', meta: 'Architecture · API · PostgreSQL', badge: 'Backend' },
+  { id: '04', title: 'What I Learned Building Nusantara', meta: 'Unreal Engine · Game Systems · Production', badge: 'Game Dev' },
 ];
 
 const currentlyBuilding = [
@@ -208,10 +208,7 @@ Astro.response.headers.set(
 
           <div class="grid gap-3">
             {engineeringNotes.map((note) => (
-              <a
-                href={note.href}
-                class="group rounded-2xl border border-[#262626] bg-[#111111] p-4 transition-all hover:-translate-y-0.5 hover:border-[#3a3a3a] hover:bg-[#161616]"
-              >
+              <div class="rounded-2xl border border-[#262626] bg-[#111111] p-4">
                 <div class="flex items-start gap-4">
                   <span class="mono min-w-[2.5rem] text-sm text-[#7DD3A7]">{note.id}</span>
                   <div class="min-w-0 flex-1">
@@ -219,15 +216,17 @@ Astro.response.headers.set(
                       <span class="mono rounded-full border border-[#262626] bg-[#0A0A0A] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">
                         {note.badge}
                       </span>
-                      <span class="mono text-[10px] uppercase tracking-[0.16em] text-[#737373]">Editorial note</span>
+                      <span class="mono text-[10px] uppercase tracking-[0.16em] text-[#737373]">Draft in progress</span>
                     </div>
                     <p class="mt-3 text-base font-medium text-[#F5F5F5]">{note.title}</p>
                     <p class="mt-1 mono text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">{note.meta}</p>
                   </div>
-                  <ExternalLink className="mt-1 h-4 w-4 text-[#A1A1A1] transition-transform group-hover:-translate-y-0.5 group-hover:text-[#F5F5F5]" />
                 </div>
-              </a>
+              </div>
             ))}
+            <p class="mono px-1 pt-1 text-[11px] uppercase tracking-[0.16em] text-[#737373]">
+              Full essays ship soon — technical threads land on LinkedIn first
+            </p>
           </div>
         </div>
 

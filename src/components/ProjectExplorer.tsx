@@ -164,6 +164,13 @@ function ProjectCard({ project, featured = false }: { project: ProjectCardData; 
         </div>
 
         <div className="mt-5 flex flex-wrap gap-3">
+          <a
+            href={`/projects/${project.id}`}
+            className="inline-flex items-center gap-2 rounded-full border border-[#7DD3A7]/40 bg-[#7DD3A7]/10 px-4 py-2 text-sm text-[#F5F5F5] transition-colors hover:bg-[#7DD3A7]/15"
+          >
+            Case study
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
           {project.links
             ? Object.entries(project.links).map(([key, value]) => (
                 <a
@@ -187,6 +194,7 @@ function ProjectCard({ project, featured = false }: { project: ProjectCardData; 
 export default function ProjectExplorer({ projects }: ProjectExplorerProps) {
   // bucket/impact precomputed server-side by toCardData() — client only filters.
   const [activeFilter, setActiveFilter] = useState<FilterKey>('All');
+  const [expanded, setExpanded] = useState(false);
 
   const filteredProjects = useMemo(
     () => (activeFilter === 'All' ? projects : projects.filter((project) => project.bucket === activeFilter)),
@@ -194,7 +202,8 @@ export default function ProjectExplorer({ projects }: ProjectExplorerProps) {
   );
 
   const featuredProject = filteredProjects.find((project) => project.featured) ?? filteredProjects[0] ?? projects[0];
-  const supportingProjects = filteredProjects.filter((project) => project.id !== featuredProject?.id).slice(0, 4);
+  const rest = filteredProjects.filter((project) => project.id !== featuredProject?.id);
+  const supportingProjects = expanded ? rest : rest.slice(0, 4);
 
   return (
     <section className="pb-16 md:pb-20 lg:pb-24" id="projects">
@@ -233,6 +242,18 @@ export default function ProjectExplorer({ projects }: ProjectExplorerProps) {
               {supportingProjects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
+            </div>
+          ) : null}
+          {rest.length > 4 ? (
+            <div className="flex justify-center pt-2">
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                aria-expanded={expanded}
+                className="mono rounded-full border border-[#262626] bg-[#111111] px-5 py-2.5 text-[11px] uppercase tracking-[0.16em] text-[#A1A1A1] transition-colors hover:border-[#3a3a3a] hover:text-[#F5F5F5]"
+              >
+                {expanded ? `Show less` : `Show all ${rest.length} projects`}
+              </button>
             </div>
           ) : null}
         </div>

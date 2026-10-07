@@ -6,6 +6,7 @@ import vercel from '@astrojs/vercel';
 
 
 export default defineConfig({
+  site: 'https://portfolio.relapri.my.id',
   integrations: [react()],
   // SSR stays on for fresh admin-driven content, but public pages set
   // CDN cache headers (see index.astro) so Vercel edge serves them

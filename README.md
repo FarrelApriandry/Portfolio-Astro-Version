@@ -1,46 +1,42 @@
-# Astro Starter Kit: Basics
+# RelApri Portfolio — Astro Version
+
+Personal portfolio for Farrel Apriandry. Astro SSR + React islands + Tailwind v4,
+Neon Postgres for content, Vercel Analytics/Speed Insights.
+
+## Setup
 
 ```sh
-bun create astro@latest -- --template basics
+cp .env.example .env.local
+# fill DATABASE_URL (Neon pooled connection string)
+
+# generate admin credentials (password min 12 chars), then paste both lines into .env.local
+node scripts/gen-admin-hash.mjs "<your-admin-password>"
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Required env vars (`Vercel → Project Settings → Environment Variables` for production):
 
-## 🚀 Project Structure
+| Key | Purpose |
+| --- | ------- |
+| `DATABASE_URL` | Neon Postgres pooled connection string |
+| `ADMIN_EMAIL` | Admin login email |
+| `ADMIN_PASSWORD_HASH` | scrypt hash from `scripts/gen-admin-hash.mjs` |
+| `ADMIN_SESSION_SECRET` | long random secret for signing admin session cookies |
 
-Inside of your Astro project, you'll see the following folders and files:
+## Commands
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+```sh
+bun install
+bun dev        # local dev server
+bun build      # production build → ./dist/
+bun preview    # preview the build locally
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Security notes
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Admin credentials live only in env vars — never in source or git history.
+- Admin sessions are HMAC-signed cookies (7-day TTL, httpOnly, secure in prod).
+- Login is rate-limited (10 failed attempts / 10 min per IP, per instance).
+- If Neon is unreachable, public pages render a cached snapshot with a
+  "cached content" banner instead of 500-ing; admin edits are disabled.
+- After deploying: if the old hardcoded password ever shipped anywhere,
+  rotate it immediately (run the hash script again and update env vars).

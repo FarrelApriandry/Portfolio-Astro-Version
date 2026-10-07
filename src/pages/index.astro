@@ -10,7 +10,7 @@ import HeroAvatar from '../components/3d/HeroAvatar.tsx';
 import { getPortfolioData } from '../lib/db';
 import resumeMarkdown from '../docs/CV.md?raw';
 
-const { profile, socials, skillGroups, experiences, educations, projects, awards, intellectualProperties } = await getPortfolioData();
+const { profile, socials, skillGroups, experiences, educations, projects, awards, intellectualProperties, degraded } = await getPortfolioData();
 
 if (!profile) {
   throw new Error('Profile data is missing');
@@ -61,6 +61,11 @@ const currentYear = new Date().getFullYear();
   <Navbar client:load brand={profile.name} items={navItems} contactHref="#contact" resumeHref="/resume.pdf" />
 
   <main id="top" class="relative z-10 mx-auto max-w-[1280px] px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-24 lg:pt-14">
+    {degraded ? (
+      <p role="status" class="mono mb-6 rounded-2xl border border-[#7DD3A7]/30 bg-[#7DD3A7]/5 px-4 py-3 text-[11px] uppercase tracking-[0.18em] text-[#7DD3A7]">
+        Showing cached content — live data is temporarily unavailable
+      </p>
+    ) : null}
     <section class="pb-16 md:pb-20 lg:pb-24">
       <div class="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
         <div>

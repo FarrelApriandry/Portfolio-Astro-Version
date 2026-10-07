@@ -116,6 +116,9 @@ if (Astro.request.method === 'POST' && canReadFormData(Astro.request)) {
   const action = String(form.get('action') ?? 'create') as ActionKey;
 
   try {
+    if (data.degraded) {
+      throw new Error('Database unreachable — edits are disabled until it reconnects.');
+    }
     switch (section) {
       case 'profile': {
         const payload = {
@@ -507,6 +510,12 @@ const objectEntries = (value: Record<string, string> | null | undefined) => Obje
         </form>
       </div>
     </div>
+
+    {data.degraded ? (
+      <div class="mb-6 rounded-xl border border-[#fca5a5]/30 bg-[#fca5a5]/5 px-4 py-3 text-sm text-[#fca5a5]">
+        Database unreachable — showing cached snapshot. Editing is disabled until the database reconnects.
+      </div>
+    ) : null}
 
     {noticeMessage ? (
       <div class="mb-6 rounded-xl border border-[#1f3f2b] bg-[#0f1b14] px-4 py-3 text-sm text-[#baf3cf]">

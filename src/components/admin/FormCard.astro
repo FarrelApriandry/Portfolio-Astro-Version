@@ -1,0 +1,24 @@
+---
+interface Props {
+  label: string;
+  error?: string;
+  storageNote?: boolean;
+}
+
+const { label, error = '', storageNote = false } = Astro.props;
+---
+
+<section class="rounded-xl border border-[#262626] bg-[#111111]">
+  <div class="flex flex-col gap-3 border-b border-[#1f1f1f] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <h2 class="text-lg font-semibold text-[#F5F5F5]">{label}</h2>
+    {error ? <p class="rounded-lg border border-[#3f1f1f] bg-[#1b0f0f] px-3 py-2 text-sm text-[#fca5a5]" role="alert">{error}</p> : null}
+  </div>
+  <div class="px-5 py-5 sm:px-6">
+    <slot />
+  </div>
+  {storageNote ? (
+    <div class="border-t border-[#1f1f1f] px-5 py-3 text-xs text-[#8a8a8a] sm:px-6">
+      Stored as comma-separated values — type naturally, no quotes or brackets needed.
+    </div>
+  ) : null}
+</section>

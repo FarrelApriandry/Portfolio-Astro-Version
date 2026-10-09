@@ -15,6 +15,7 @@
     "@astrojs/node": "^11.1.6",
     "@astrojs/react": "^6.0.6",
     "@astrojs/vercel": "^11.0.11",
+    "@aws-sdk/client-s3": "^3.1148.0",
     "@neon/config": "^1.7.2",
     "@neon/env": "^1.4.3",
     "@neondatabase/serverless": "^1.1.0",

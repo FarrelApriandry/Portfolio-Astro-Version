@@ -1,0 +1,40 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  value?: string | number | null;
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+  hint?: string;
+  span2?: boolean;
+  class?: string;
+}
+
+const {
+  name,
+  label,
+  value = '',
+  type = 'text',
+  placeholder = '',
+  required = false,
+  hint = '',
+  span2 = false,
+  class: className = '',
+} = Astro.props;
+---
+
+<label class:list={['block', span2 && 'md:col-span-2', className]}>
+  <span class="mb-1.5 block text-sm font-medium text-[#D4D4D4]">
+    {label}{required ? <span class="text-[#7DD3A7]"> *</span> : null}
+  </span>
+  <input
+    name={name}
+    type={type}
+    value={value ?? ''}
+    placeholder={placeholder}
+    required={required}
+    class="min-h-[44px] w-full rounded-lg border border-[#2E2E2E] bg-[#0A0A0A] px-3.5 text-[15px] text-[#F5F5F5] outline-none transition-colors placeholder:text-[#5a5a5a] focus:border-[#7DD3A7]"
+  />
+  {hint ? <span class="mt-1.5 block text-xs text-[#8a8a8a]">{hint}</span> : null}
+</label>

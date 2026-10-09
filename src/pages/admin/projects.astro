@@ -1,0 +1,132 @@
+---
+import AdminShell from '../../components/admin/AdminShell.astro';
+import Field from '../../components/admin/Field.astro';
+import TextareaField from '../../components/admin/TextareaField.astro';
+import FormCard from '../../components/admin/FormCard.astro';
+import ImageUpload from '../../components/admin/ImageUpload.astro';
+import { isAdminAuthenticated } from '../../lib/admin';
+import { sectionByKey } from '../../lib/admin-sections';
+import { getPortfolioData } from '../../lib/db';
+
+if (!isAdminAuthenticated(Astro.cookies)) {
+  return Astro.redirect('/admin/login');
+}
+
+const meta = sectionByKey.get('projects')!;
+const data = await getPortfolioData();
+const notice = Astro.url.searchParams.get('notice') ?? '';
+const errorMessage = Astro.url.searchParams.get('error') ?? '';
+const editing = Astro.url.searchParams.get('edit') ? data.projects.find((item) => item.id === Astro.url.searchParams.get('edit')) ?? null : null;
+const joinList = (items: string[]) => items.join(', ');
+---
+
+<AdminShell
+  title={editing ? `Edit project: ${editing.title}` : 'Projects'}
+  description={editing ? 'Update the case study, then save your changes.' : meta.description}
+  active="projects"
+  notice={notice}
+  degraded={data.degraded}
+>
+  {errorMessage ? <div class="mb-6 rounded-xl border border-[#fca5a5]/30 bg-[#fca5a5]/5 px-4 py-3.5 text-sm text-[#fca5a5]" role="alert">{errorMessage}</div> : null}
+
+  <!-- Create / edit form -->
+  <FormCard label={editing ? `Editing: ${editing.id}` : 'Add project'} error={data.degraded ? 'Editing is disabled while the database is unreachable.' : ''}>
+    <form method="POST" action="/api/admin/projects" class="space-y-6">
+      <input type="hidden" name="section" value="projects" />
+      <input type="hidden" name="action" value={editing ? 'update' : 'create'} />
+
+      <div class="grid gap-5 md:grid-cols-2">
+        {editing ? <input type="hidden" name="id" value={editing.id} /> : null}
+        <Field name="title" label="Title" value={editing?.title ?? ''} required />
+        <Field name="category" label="Category" value={editing?.category ?? ''} required placeholder="e.g. Web Platform, Game, IoT" />
+        <Field name="year" label="Year" value={editing?.year ?? new Date().getFullYear()} type="number" />
+        <Field name="role" label="Your role" value={editing?.role ?? ''} required placeholder="e.g. Lead Developer" />
+      </div>
+
+      <TextareaField name="summary" label="Summary" value={editing?.summary ?? ''} rows={3} required hint="One or two sentences shown on cards and SEO." />
+
+      <div class="grid gap-5 md:grid-cols-2">
+        <TextareaField name="problem" label="Problem" value={editing?.problem ?? ''} rows={4} />
+        <TextareaField name="solution" label="Solution" value={editing?.solution ?? ''} rows={4} />
+      </div>
+
+      <div class="grid gap-5 md:grid-cols-2">
+        <Field name="technologies" label="Technologies" value={editing ? joinList(editing.technologies) : ''} hint="Comma separated — e.g. Astro, PostgreSQL, Docker" />
+        <Field name="role_responsibilities" label="Role responsibilities" value={editing ? joinList(editing.role_responsibilities) : ''} hint="Comma separated" />
+      </div>
+
+      <Field
+        name="links"
+        label="Links"
+        value={editing?.links ? JSON.stringify(editing.links, null, 2) : ''}
+        hint="One per line as “Label: https://…”. Leave blank if none."
+      />
+
+      <div class="flex items-start gap-3 rounded-lg border border-[#262626] bg-[#0A0A0A] px-4 py-3.5">
+        <input id="featured" name="featured" type="checkbox" checked={editing?.featured ?? false} class="mt-1 h-5 w-5 rounded border-[#2E2E2E] bg-[#0A0A0A]" />
+        <label for="featured" class="text-sm text-[#D4D4D4]">
+          <span class="font-medium text-[#F5F5F5]">Featured project</span>
+          <span class="mt-0.5 block text-xs text-[#8a8a8a]">Featured projects appear first on the homepage.</span>
+        </label>
+      </div>
+
+      <TextareaField name="architecture_notes" label="Architecture notes" value={editing?.architecture_notes ?? ''} rows={3} />
+
+      <div class="space-y-3">
+        <p class="text-sm font-medium text-[#D4D4D4]">Cover image</p>
+        <ImageUpload name="image" variant="cover" initialUrl={editing?.image ?? ''} bucket="projects" folder="projects" />
+        <Field name="alt" label="Alt text" value={editing?.alt ?? ''} hint="Describe the image for screen readers and SEO." />
+      </div>
+
+      <div class="space-y-3">
+        <p class="text-sm font-medium text-[#D4D4D4]">Gallery</p>
+        <ImageUpload name="gallery" variant="gallery" initialGallery={editing?.gallery ?? []} bucket="projects" folder="projects" />
+      </div>
+
+      <div class="flex flex-col gap-3 border-t border-[#1f1f1f] pt-5 sm:flex-row sm:items-center sm:justify-end">
+        {editing ? <a href="/admin/projects" class="min-h-[44px] rounded-lg border border-[#2E2E2E] px-5 text-center text-sm leading-[42px] text-[#A1A1A1] transition-colors hover:bg-[#161616] hover:text-[#F5F5F5]">Cancel</a> : null}
+        <button type="submit" class="min-h-[44px] rounded-lg bg-[#7DD3A7] px-6 text-sm font-semibold text-[#0A0A0A] transition-colors hover:bg-[#a7e3c4]">
+          {editing ? 'Save changes' : 'Add project'}
+        </button>
+      </div>
+    </form>
+  </FormCard>
+
+  <!-- Existing records -->
+  <h2 class="mb-4 mt-10 text-lg font-semibold text-[#F5F5F5]">Existing projects <span class="text-sm font-normal text-[#8a8a8a]">({data.projects.length})</span></h2>
+  <div class="grid gap-4">
+    {data.projects.map((item) => (
+      <article class="rounded-xl border border-[#262626] bg-[#111111] p-4 sm:p-5">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+          {item.image ? (
+            <img src={item.image} alt={item.alt || item.title} class="h-24 w-full rounded-lg border border-[#2E2E2E] object-cover sm:h-20 sm:w-32" loading="lazy" />
+          ) : null}
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <h3 class="text-base font-medium text-[#F5F5F5]">{item.title}</h3>
+              {item.featured ? <span class="rounded-full border border-[#1f3f2b] bg-[#0f1b14] px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] text-[#7DD3A7]">Featured</span> : null}
+            </div>
+            <p class="mt-1 text-sm text-[#8a8a8a]">{item.category} · {item.year} · {item.role}</p>
+            <p class="mt-2 line-clamp-2 text-sm text-[#A1A1A1]">{item.summary}</p>
+          </div>
+          <div class="flex shrink-0 gap-2">
+            <a href={`/admin/projects?edit=${item.id}`} class="min-h-[44px] rounded-lg border border-[#2E2E2E] px-4 text-sm leading-[42px] text-[#F5F5F5] transition-colors hover:bg-[#161616]">Edit</a>
+            <form method="POST" action="/api/admin/projects" data-confirm={`Delete “${item.title}”? This cannot be undone.`}>
+              <input type="hidden" name="section" value="projects" />
+              <input type="hidden" name="action" value="delete" />
+              <input type="hidden" name="id" value={item.id} />
+              <button type="submit" class="min-h-[44px] rounded-lg border border-[#3f1f1f] px-4 text-sm text-[#fca5a5] transition-colors hover:bg-[#1b0f0f]">Delete</button>
+            </form>
+          </div>
+        </div>
+      </article>
+    ))}
+    {data.projects.length === 0 ? (
+      <p class="rounded-xl border border-dashed border-[#2E2E2E] px-4 py-10 text-center text-sm text-[#8a8a8a]">No projects yet — add your first one with the form above.</p>
+    ) : null}
+  </div>
+</AdminShell>
+
+<script>
+  import '../../scripts/admin-upload';
+</script>

@@ -1,0 +1,21 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  value?: string | null;
+  rows?: number;
+  placeholder?: string;
+  hint?: string;
+  span2?: boolean;
+  mono?: boolean;
+}
+
+const { name, label, value = '', rows = 4, placeholder = '', hint = '', span2 = false, mono = false } = Astro.props;
+const textareaClass = `w-full rounded-lg border border-[#2E2E2E] bg-[#0A0A0A] px-3.5 py-2.5 text-[15px] leading-relaxed text-[#F5F5F5] outline-none transition-colors placeholder:text-[#5a5a5a] focus:border-[#7DD3A7] ${mono ? 'font-mono text-sm' : ''}`;
+---
+
+<label class:list={['block', span2 && 'md:col-span-2']}>
+  <span class="mb-1.5 block text-sm font-medium text-[#D4D4D4]">{label}</span>
+  <textarea name={name} rows={rows} placeholder={placeholder} class={textareaClass}>{value ?? ''}</textarea>
+  {hint ? <span class="mt-1.5 block text-xs text-[#8a8a8a]">{hint}</span> : null}
+</label>

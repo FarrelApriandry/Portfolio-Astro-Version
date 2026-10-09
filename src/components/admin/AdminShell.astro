@@ -1,0 +1,159 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { sections, successMessages, type SectionKey } from '../../lib/admin-sections';
+
+interface Props {
+  title: string;
+  description?: string;
+  active?: SectionKey | 'overview';
+  notice?: string;
+  degraded?: boolean;
+}
+
+const { title, description = '', active = 'overview', notice = '', degraded = false } = Astro.props;
+const noticeMessage = successMessages[notice] ?? '';
+const actionLinks = sections.filter((section) => section.key !== 'profile');
+---
+
+<Layout title={`${title} | Portfolio Admin`} noindex={true}>
+  <div class="min-h-screen lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">
+    <!-- Sidebar (desktop) -->
+    <aside class="sticky top-0 hidden h-screen flex-col border-r border-[#262626] bg-[#0D0D0D] lg:flex">
+      <div class="border-b border-[#262626] px-5 py-5">
+        <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Portfolio Admin</p>
+        <p class="mt-1 text-sm text-[#A1A1A1]">portfolio.relapri.my.id</p>
+      </div>
+
+      <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="Admin sections">
+        <a
+          href="/admin"
+          class:list={[
+            'flex min-h-[44px] items-center rounded-lg px-3 text-sm transition-colors',
+            active === 'overview'
+              ? 'bg-[#7DD3A7]/10 font-medium text-[#F5F5F5] ring-1 ring-inset ring-[#7DD3A7]/30'
+              : 'text-[#A1A1A1] hover:bg-[#161616] hover:text-[#F5F5F5]',
+          ]}
+          aria-current={active === 'overview' ? 'page' : undefined}
+        >
+          Overview
+        </a>
+        {
+          actionLinks.map((section) => (
+            <a
+              href={`/admin/${section.key}`}
+              class:list={[
+                'flex min-h-[44px] items-center rounded-lg px-3 text-sm transition-colors',
+                active === section.key
+                  ? 'bg-[#7DD3A7]/10 font-medium text-[#F5F5F5] ring-1 ring-inset ring-[#7DD3A7]/30'
+                  : 'text-[#A1A1A1] hover:bg-[#161616] hover:text-[#F5F5F5]',
+              ]}
+              aria-current={active === section.key ? 'page' : undefined}
+            >
+              {section.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <div class="space-y-1 border-t border-[#262626] px-3 py-4">
+        <a href="/" class="flex min-h-[44px] items-center rounded-lg px-3 text-sm text-[#A1A1A1] transition-colors hover:bg-[#161616] hover:text-[#F5F5F5]">
+          Open site ↗
+        </a>
+        <form method="POST" action="/admin/logout">
+          <button type="submit" class="flex min-h-[44px] w-full items-center rounded-lg px-3 text-left text-sm text-[#A1A1A1] transition-colors hover:bg-[#161616] hover:text-[#F5F5F5]">
+            Log out
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <div class="flex min-w-0 flex-col">
+      <!-- Mobile top bar -->
+      <div class="sticky top-0 z-30 border-b border-[#262626] bg-[#0D0D0D]/95 backdrop-blur lg:hidden">
+        <div class="flex items-center justify-between px-4 py-3">
+          <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Portfolio Admin</p>
+          <div class="flex items-center gap-3">
+            <a href="/" class="text-sm text-[#A1A1A1]">Site ↗</a>
+            <form method="POST" action="/admin/logout">
+              <button type="submit" class="text-sm text-[#A1A1A1]">Log out</button>
+            </form>
+          </div>
+        </div>
+        <nav class="flex gap-2 overflow-x-auto px-4 pb-3" aria-label="Admin sections">
+          <a
+            href="/admin"
+            class:list={[
+              'min-h-[40px] shrink-0 rounded-full border px-4 text-sm leading-[38px] transition-colors',
+              active === 'overview'
+                ? 'border-[#7DD3A7]/40 bg-[#7DD3A7]/10 text-[#F5F5F5]'
+                : 'border-[#262626] text-[#A1A1A1]',
+            ]}
+          >
+            Overview
+          </a>
+          {
+            actionLinks.map((section) => (
+              <a
+                href={`/admin/${section.key}`}
+                class:list={[
+                  'min-h-[40px] shrink-0 rounded-full border px-4 text-sm leading-[38px] transition-colors',
+                  active === section.key
+                    ? 'border-[#7DD3A7]/40 bg-[#7DD3A7]/10 text-[#F5F5F5]'
+                    : 'border-[#262626] text-[#A1A1A1]',
+                ]}
+                aria-current={active === section.key ? 'page' : undefined}
+              >
+                {section.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+
+      <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 lg:px-10">
+        <header class="mb-8">
+          <h1 class="text-3xl font-semibold tracking-[-0.04em] text-[#F5F5F5] sm:text-4xl">{title}</h1>
+          {description ? <p class="mt-2 max-w-2xl text-base text-[#A1A1A1]">{description}</p> : null}
+        </header>
+
+        {degraded ? (
+          <div class="mb-6 rounded-xl border border-[#fca5a5]/30 bg-[#fca5a5]/5 px-4 py-3.5 text-sm text-[#fca5a5]" role="alert">
+            Database unreachable — showing cached snapshot. Editing is disabled until the database reconnects.
+          </div>
+        ) : null}
+
+        {noticeMessage ? (
+          <div class="mb-6 rounded-xl border border-[#1f3f2b] bg-[#0f1b14] px-4 py-3.5 text-sm text-[#baf3cf]" role="status">
+            {noticeMessage}
+          </div>
+        ) : null}
+
+        <slot />
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Unsaved-changes guard: warn before leaving a dirty form; forms clear it on submit.
+    // Delete forms opt into a confirmation via [data-confirm].
+    let dirty = false;
+    document.querySelectorAll('form').forEach((form) => {
+      form.addEventListener('input', () => {
+        dirty = true;
+      });
+      form.addEventListener('submit', (event) => {
+        if (form instanceof HTMLFormElement && form.dataset.confirm && !window.confirm(form.dataset.confirm)) {
+          event.preventDefault();
+          return;
+        }
+        dirty = false;
+      });
+    });
+    window.addEventListener('beforeunload', (event) => {
+      if (dirty) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    });
+  </script>
+</Layout>

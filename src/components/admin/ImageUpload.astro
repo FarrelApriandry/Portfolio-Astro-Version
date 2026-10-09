@@ -1,0 +1,68 @@
+---
+interface Props {
+  /** Field name for the hidden input that receives the final URL (comma-separated for gallery) */
+  name: string;
+  /** 'cover' = single preview + replace; 'gallery' = multiple thumbnails, add/remove */
+  variant?: 'cover' | 'gallery';
+  initialUrl?: string | null;
+  initialGallery?: string[];
+  bucket?: 'projects' | 'essentials';
+  folder?: string;
+}
+
+const { name, variant = 'cover', initialUrl = '', initialGallery = [], bucket = 'projects', folder = 'uploads' } = Astro.props;
+const uid = `${variant}-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<!-- Server-rendered shell; admin-upload.ts progressively enhances it -->
+<div
+  id={uid}
+  class="image-upload rounded-xl border border-dashed border-[#2E2E2E] bg-[#0A0A0A] p-4 transition-colors"
+  data-variant={variant}
+  data-bucket={bucket}
+  data-folder={folder}
+>
+  <input type="hidden" name={name} value={variant === 'gallery' ? initialGallery.join(',') : initialUrl ?? ''} />
+
+  <div class="dropzone flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg px-4 py-6 text-center transition-colors">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-[#7DD3A7]" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+      <polyline points="17 8 12 3 7 8"></polyline>
+      <line x1="12" y1="3" x2="12" y2="15"></line>
+    </svg>
+    <p class="text-sm text-[#D4D4D4]">
+      <span class="font-medium text-[#F5F5F5]">Click to upload</span> or drag &amp; drop
+    </p>
+    <p class="text-xs text-[#8a8a8a]">
+      {variant === 'gallery' ? 'Add as many images as you need' : 'JPG, PNG, WebP, AVIF, or GIF — up to 8 MB'}
+    </p>
+  </div>
+
+  <!-- Preview area (hidden until there is something to show) -->
+  <div class="previews mt-4 hidden">
+    <!-- cover: one big preview / gallery: thumbnail grid -->
+  </div>
+
+  <p class="status mt-3 hidden text-sm" role="status" aria-live="polite"></p>
+
+  <div class="mt-4 border-t border-[#1f1f1f] pt-3">
+    <label class="block">
+      <span class="text-xs text-[#8a8a8a]">…or paste an image URL directly</span>
+      <input
+        type="url"
+        class="url-input mt-1.5 min-h-[40px] w-full rounded-lg border border-[#2E2E2E] bg-[#111111] px-3 text-sm text-[#F5F5F5] outline-none transition-colors placeholder:text-[#5a5a5a] focus:border-[#7DD3A7]"
+        placeholder="https://…"
+      />
+    </label>
+  </div>
+</div>
+
+<style>
+  .image-upload.drop-active {
+    border-color: #7dd3a7;
+    background: rgba(125, 211, 167, 0.04);
+  }
+  .previews:not(:empty) {
+    display: block;
+  }
+</style>

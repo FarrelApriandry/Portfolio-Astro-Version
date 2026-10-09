@@ -1,0 +1,72 @@
+---
+import AdminShell from '../../components/admin/AdminShell.astro';
+import Field from '../../components/admin/Field.astro';
+import FormCard from '../../components/admin/FormCard.astro';
+import { isAdminAuthenticated } from '../../lib/admin';
+import { sectionByKey } from '../../lib/admin-sections';
+import { getPortfolioData } from '../../lib/db';
+
+if (!isAdminAuthenticated(Astro.cookies)) {
+  return Astro.redirect('/admin/login');
+}
+
+const meta = sectionByKey.get('skill_groups')!;
+const data = await getPortfolioData();
+const notice = Astro.url.searchParams.get('notice') ?? '';
+const errorMessage = Astro.url.searchParams.get('error') ?? '';
+const editId = Number(Astro.url.searchParams.get('edit') ?? 0);
+const editing = data.skillGroups.find((item) => item.id === editId) ?? null;
+const joinList = (items: string[]) => items.join(', ');
+---
+
+<AdminShell
+  title={editing ? 'Edit skill group' : 'Skill Groups'}
+  description={editing ? `Editing “${editing.label}”.` : meta.description}
+  active="skill_groups"
+  notice={notice}
+  degraded={data.degraded}
+>
+  {errorMessage ? <div class="mb-6 rounded-xl border border-[#fca5a5]/30 bg-[#fca5a5]/5 px-4 py-3.5 text-sm text-[#fca5a5]" role="alert">{errorMessage}</div> : null}
+
+  <FormCard label={editing ? `Editing #${editing.id}` : 'Add skill group'} error={data.degraded ? 'Editing is disabled while the database is unreachable.' : ''} storageNote={true}>
+    <form method="POST" action="/api/admin/sections" class="space-y-5">
+      <input type="hidden" name="section" value="skill_groups" />
+      <input type="hidden" name="action" value={editing ? 'update' : 'create'} />
+      {editing ? <input type="hidden" name="id" value={editing.id} /> : null}
+      <Field name="label" label="Group label" value={editing?.label ?? ''} required placeholder="e.g. Frontend" />
+      <Field name="items" label="Skills" value={editing ? joinList(editing.items) : ''} required placeholder="React, TypeScript, Tailwind" />
+      <div class="flex flex-col gap-3 border-t border-[#1f1f1f] pt-5 sm:flex-row sm:justify-end">
+        {editing ? <a href="/admin/skill-groups" class="min-h-[44px] rounded-lg border border-[#2E2E2E] px-5 text-center text-sm leading-[42px] text-[#A1A1A1] transition-colors hover:bg-[#161616] hover:text-[#F5F5F5]">Cancel</a> : null}
+        <button type="submit" class="min-h-[44px] rounded-lg bg-[#7DD3A7] px-6 text-sm font-semibold text-[#0A0A0A] transition-colors hover:bg-[#a7e3c4]">
+          {editing ? 'Save changes' : 'Add skill group'}
+        </button>
+      </div>
+    </form>
+  </FormCard>
+
+  <h2 class="mb-4 mt-10 text-lg font-semibold text-[#F5F5F5]">Existing groups <span class="text-sm font-normal text-[#8a8a8a]">({data.skillGroups.length})</span></h2>
+  <div class="grid gap-4">
+    {data.skillGroups.map((item) => (
+      <article class="flex flex-col gap-3 rounded-xl border border-[#262626] bg-[#111111] p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5">
+        <div class="min-w-0">
+          <h3 class="text-base font-medium text-[#F5F5F5]">{item.label}</h3>
+          <div class="mt-2 flex flex-wrap gap-2">
+            {item.items.map((entry) => (
+              <span class="rounded-full border border-[#262626] bg-[#0A0A0A] px-2.5 py-1 text-xs text-[#D4D4D4]">{entry}</span>
+            ))}
+          </div>
+        </div>
+        <div class="flex shrink-0 gap-2">
+          <a href={`/admin/skill-groups?edit=${item.id}`} class="min-h-[44px] rounded-lg border border-[#2E2E2E] px-4 text-sm leading-[42px] text-[#F5F5F5] transition-colors hover:bg-[#161616]">Edit</a>
+          <form method="POST" action="/api/admin/sections" data-confirm={`Delete the “${item.label}” group?`}>
+            <input type="hidden" name="section" value="skill_groups" />
+            <input type="hidden" name="action" value="delete" />
+            <input type="hidden" name="id" value={item.id} />
+            <button type="submit" class="min-h-[44px] rounded-lg border border-[#3f1f1f] px-4 text-sm text-[#fca5a5] transition-colors hover:bg-[#1b0f0f]">Delete</button>
+          </form>
+        </div>
+      </article>
+    ))}
+    {data.skillGroups.length === 0 ? <p class="rounded-xl border border-dashed border-[#2E2E2E] px-4 py-10 text-center text-sm text-[#8a8a8a]">No skill groups yet — add your first one above.</p> : null}
+  </div>
+</AdminShell>

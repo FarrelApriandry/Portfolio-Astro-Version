@@ -25,61 +25,61 @@ const {
 } = Astro.props;
 ---
 
-<footer id="contact" class="border-t border-[#262626] bg-[#0A0A0A]">
-  <div class="mx-auto max-w-[1280px] px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-    <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-      <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
+<footer id="contact" class="scroll-mt-28 border-t border-[#1F1F1F] bg-[#0A0A0A]">
+  <div class="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <div class="grid gap-16 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
+      <div>
         <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Contact</p>
-        <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5]">Let&apos;s build something useful together.</h2>
-        <p class="mt-4 max-w-2xl text-base leading-7 text-[#A1A1A1]">
-          Available for product engineering, system design, and technical collaboration. If you need a developer who understands frontend, backend, databases, and infrastructure as one flow, reach out.
+        <h2 class="mt-4 max-w-xl text-4xl font-semibold tracking-[-0.04em] text-[#F5F5F5] md:text-5xl">
+          Let&apos;s build something useful together.
+        </h2>
+        <p class="mt-6 max-w-lg text-lg leading-8 text-[#A1A1A1]">
+          Available for product engineering, system design, and technical collaboration. If you need a developer who treats frontend, backend, databases, and infrastructure as one flow — reach out.
         </p>
 
-        <div class="mt-6 flex flex-wrap gap-3">
-          <a
-            href="https://github.com/FarrelApriandry"
-            target="_blank"
-            rel="noreferrer"
-            class="inline-flex items-center gap-2 rounded-full border border-[#262626] bg-[#111111] px-4 py-2 text-sm font-medium text-[#F5F5F5] transition-colors hover:border-[#3a3a3a] hover:bg-[#161616]"
-          >
-            GitHub
-            <ExternalLink className="h-4 w-4" />
-          </a>
-          <span class="mono inline-flex items-center rounded-full border border-[#262626] bg-[#0A0A0A] px-4 py-2 text-[11px] uppercase tracking-[0.14em] text-[#A1A1A1]">
-            Magelang, ID · UTC+7
-          </span>
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+          {socials.map((social) => (
+            <a
+              href={social.href}
+              target={social.href.startsWith('http') ? '_blank' : undefined}
+              rel={social.href.startsWith('http') ? 'noreferrer' : undefined}
+              class="group inline-flex items-center gap-1.5 text-sm font-medium text-[#F5F5F5] transition-colors hover:text-[#7DD3A7]"
+            >
+              {social.label}
+              <ExternalLink className="h-3.5 w-3.5 opacity-60 transition-opacity group-hover:opacity-100" />
+            </a>
+          ))}
         </div>
+        <p class="mt-3 text-sm text-[#8a8a8a]">{email} · Magelang, ID · UTC+7</p>
 
-        <ContactForm client:visible email={email} />
+        <div class="mt-12 max-w-lg">
+          <ContactForm client:visible email={email} />
+        </div>
       </div>
 
-      <div class="grid gap-6 sm:grid-cols-2">
-        <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
-          <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Quick Links</p>
-          <nav class="mt-4 space-y-3">
+      <div class="grid content-start gap-10 sm:grid-cols-2">
+        <div>
+          <p class="text-sm font-medium text-[#F5F5F5]">Explore</p>
+          <nav class="mt-5 space-y-3" aria-label="Footer navigation">
             {links.map((link) => (
-              <a
-                href={link.href}
-                class="block rounded-lg border border-[#262626] px-3 py-2 text-sm text-[#D4D4D4] transition-colors hover:border-[#3a3a3a] hover:bg-[#161616] hover:text-[#F5F5F5]"
-              >
+              <a href={link.href} class="block text-sm text-[#A1A1A1] transition-colors hover:text-[#F5F5F5]">
                 {link.label}
               </a>
             ))}
           </nav>
         </div>
 
-        <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
-          <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Socials</p>
-          <div class="mt-4 space-y-3">
+        <div>
+          <p class="text-sm font-medium text-[#F5F5F5]">Elsewhere</p>
+          <div class="mt-5 space-y-3">
             {socials.map((social) => (
               <a
                 href={social.href}
                 target={social.href.startsWith('http') ? '_blank' : undefined}
                 rel={social.href.startsWith('http') ? 'noreferrer' : undefined}
-                class="flex items-center justify-between rounded-lg border border-[#262626] px-3 py-2 text-sm text-[#D4D4D4] transition-colors hover:border-[#3a3a3a] hover:bg-[#161616] hover:text-[#F5F5F5]"
+                class="block text-sm text-[#A1A1A1] transition-colors hover:text-[#F5F5F5]"
               >
-                <span>{social.label}</span>
-                <ExternalLink className="h-4 w-4 text-[#7DD3A7]" />
+                {social.label}
               </a>
             ))}
           </div>
@@ -87,9 +87,9 @@ const {
       </div>
     </div>
 
-    <div class="mt-8 flex flex-col gap-3 border-t border-[#262626] pt-5 sm:flex-row sm:items-center sm:justify-between">
-      <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#8a8a8a]">© {year} Farrel Apriandry. All rights reserved.</p>
-      <p class="text-sm text-[#A1A1A1]">Built with Astro, React, Tailwind CSS, and Neon.</p>
+    <div class="mt-20 flex flex-col gap-2 border-t border-[#1F1F1F] pt-6 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-[13px] text-[#8a8a8a]">© {year} Farrel Apriandry.</p>
+      <p class="text-[13px] text-[#8a8a8a]">Built with Astro, React, Tailwind CSS, and Neon.</p>
     </div>
   </div>
 </footer>

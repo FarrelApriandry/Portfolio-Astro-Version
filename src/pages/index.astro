@@ -42,16 +42,16 @@ const footerSocialLinks = [
 ];
 
 const engineeringNotes = [
-  { id: '01', title: 'Designing a Self-Hosted HomeLab', meta: 'Linux · Docker · Networking', badge: 'Systems' },
-  { id: '02', title: 'Building a Real-Time System Monitoring Dashboard', meta: 'Node.js · WebSockets · Metrics', badge: 'Observability' },
-  { id: '03', title: 'Structuring TypeScript Backend Services', meta: 'Architecture · API · PostgreSQL', badge: 'Backend' },
-  { id: '04', title: 'What I Learned Building Nusantara', meta: 'Unreal Engine · Game Systems · Production', badge: 'Game Dev' },
+  { id: '01', title: 'Designing a Self-Hosted HomeLab', meta: 'Linux · Docker · Networking' },
+  { id: '02', title: 'Building a Real-Time System Monitoring Dashboard', meta: 'Node.js · WebSockets · Metrics' },
+  { id: '03', title: 'Structuring TypeScript Backend Services', meta: 'Architecture · API · PostgreSQL' },
+  { id: '04', title: 'What I Learned Building Nusantara', meta: 'Unreal Engine · Game Systems · Production' },
 ];
 
 const currentlyBuilding = [
-  { id: '01', title: 'Personal HomeLab', meta: 'Linux · Docker · Networking' },
-  { id: '02', title: 'System Monitoring Platform', meta: 'TypeScript · Node.js · WebSockets' },
-  { id: '03', title: 'Full-Stack TypeScript Projects', meta: 'React · PostgreSQL · REST APIs' },
+  { title: 'Personal HomeLab', meta: 'Linux · Docker · Networking' },
+  { title: 'System Monitoring Platform', meta: 'TypeScript · Node.js · WebSockets' },
+  { title: 'Full-Stack TypeScript Projects', meta: 'React · PostgreSQL · REST APIs' },
 ];
 
 const currentYear = new Date().getFullYear();
@@ -69,102 +69,77 @@ Astro.response.headers.set(
 <Layout title={`${profile.name} | ${profile.role}`} description={profile.value_statement}>
   <Navbar client:load brand={profile.name} items={navItems} contactHref="#contact" resumeHref="/resume.pdf" />
 
-  <main id="top" class="relative z-10 mx-auto max-w-[1280px] px-4 pb-16 pt-10 sm:px-6 lg:px-8 lg:pb-24 lg:pt-14">
+  <main id="top" class="relative z-10 mx-auto max-w-[1280px] px-4 pb-10 pt-12 sm:px-6 lg:px-8 lg:pt-20">
     {degraded ? (
-      <p role="status" class="mono mb-6 rounded-2xl border border-[#7DD3A7]/30 bg-[#7DD3A7]/5 px-4 py-3 text-[11px] uppercase tracking-[0.18em] text-[#7DD3A7]">
+      <p role="status" class="mono mb-10 rounded-2xl border border-[#7DD3A7]/30 bg-[#7DD3A7]/5 px-4 py-3 text-[11px] uppercase tracking-[0.18em] text-[#7DD3A7]">
         Showing cached content — live data is temporarily unavailable
       </p>
     ) : null}
-    <section class="pb-16 md:pb-20 lg:pb-24">
-      <div class="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-        <div>
-          <p class="mono text-[11px] font-medium uppercase tracking-[0.26em] text-[#7DD3A7]">Full-Stack TypeScript / Software Engineer</p>
-          <h1 class="mt-6 max-w-[18ch] text-5xl font-black uppercase leading-[0.88] tracking-[-0.09em] text-[#F5F5F5] sm:text-6xl lg:text-7xl">
-            Farrel Apriandry
-          </h1>
-          <p class="mt-5 text-xl font-medium text-[#D4D4D4] md:text-2xl">
-            {profile.role}
-          </p>
-          <p class="mt-6 max-w-xl text-base leading-7 text-[#A1A1A1] md:text-lg">
-            {profile.value_statement}
-          </p>
 
-          <div class="mt-8 flex flex-wrap items-center gap-3">
-            <a
-              href="#contact"
-              class="inline-flex items-center justify-center rounded-full border border-[#7DD3A7]/40 bg-[#7DD3A7]/10 px-5 py-3 text-sm font-medium text-[#F5F5F5] transition-colors hover:bg-[#7DD3A7]/15"
-            >
-              Get in Touch
-              <ArrowUpRight className="ml-2 h-4 w-4" />
-            </a>
-            <a
-              href="/resume.pdf"
-              class="inline-flex items-center justify-center rounded-full border border-[#262626] bg-[#111111] px-5 py-3 text-sm font-medium text-[#F5F5F5] transition-colors hover:border-[#3a3a3a] hover:bg-[#161616]"
-            >
-              Download CV
-            </a>
-            <ResumeModal client:idle content={resumeMarkdown} />
-          </div>
+    <!-- Hero — big open type, no boxes -->
+    <section class="grid gap-16 pb-24 md:pb-32 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:pb-40">
+      <div>
+        <h1 class="max-w-[16ch] text-6xl font-black uppercase leading-[0.9] tracking-[-0.07em] text-[#F5F5F5] sm:text-7xl lg:text-[6.5rem]">
+          {profile.name}
+        </h1>
+        <p class="mt-7 text-2xl font-medium text-[#D4D4D4] md:text-3xl">
+          {profile.role}
+        </p>
+        <p class="mt-6 max-w-xl text-lg leading-8 text-[#A1A1A1]">
+          {profile.value_statement}
+        </p>
 
-          <div class="mt-6 flex flex-wrap gap-3">
-            {heroSocialLinks.map((link) => {
-              const Icon = link.icon;
-
-              return (
-                <a
-                  href={link.href}
-                  target={link.href.startsWith('http') ? '_blank' : undefined}
-                  rel={link.href.startsWith('http') ? 'noreferrer' : undefined}
-                  aria-label={link.label}
-                  class="group inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#262626] bg-[#111111] text-[#D4D4D4] transition-colors hover:border-[#3a3a3a] hover:text-[#F5F5F5]"
-                >
-                  <Icon className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
-                </a>
-              );
-            })}
-          </div>
+        <div class="mt-10 flex flex-wrap items-center gap-4">
+          <a
+            href="#contact"
+            class="inline-flex items-center justify-center rounded-full bg-[#7DD3A7] px-7 py-3.5 text-sm font-semibold text-[#0A0A0A] transition-colors hover:bg-[#a7e3c4]"
+          >
+            Get in Touch
+            <ArrowUpRight className="ml-2 h-4 w-4" />
+          </a>
+          <a
+            href="/resume.pdf"
+            class="inline-flex items-center justify-center rounded-full border border-[#2E2E2E] px-7 py-3.5 text-sm font-medium text-[#F5F5F5] transition-colors hover:border-[#4a4a4a]"
+          >
+            Download CV
+          </a>
+          <ResumeModal client:idle content={resumeMarkdown} />
         </div>
 
-        <aside class="rounded-3xl border border-[#262626] bg-[#111111] p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-          <div class="flex items-center justify-between border-b border-[#262626] pb-3">
-            <p class="mono text-[10px] font-medium uppercase tracking-[0.22em] text-[#A1A1A1]">System Panel</p>
-            <span class="inline-flex items-center gap-2 mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">
-              <span class="h-2 w-2 rounded-full bg-[#7DD3A7]" aria-hidden="true" />
-              Active
-            </span>
-          </div>
+        <div class="mt-8 flex flex-wrap gap-3">
+          {heroSocialLinks.map((link) => {
+            const Icon = link.icon;
 
-          <div class="mt-5 space-y-5">
-            <HeroAvatar client:visible />
+            return (
+              <a
+                href={link.href}
+                target={link.href.startsWith('http') ? '_blank' : undefined}
+                rel={link.href.startsWith('http') ? 'noreferrer' : undefined}
+                aria-label={link.label}
+                class="group inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#262626] text-[#A1A1A1] transition-colors hover:border-[#4a4a4a] hover:text-[#F5F5F5]"
+              >
+                <Icon className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
+              </a>
+            );
+          })}
+        </div>
+      </div>
 
-            <div>
-              <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a8a]">Building</p>
-              <p class="mt-2 text-2xl font-semibold tracking-[-0.04em] text-[#F5F5F5]">{profile.status}</p>
-            </div>
+      <!-- Right: avatar as the focal object, status as quiet text (no panel) -->
+      <div class="flex flex-col items-start lg:items-end">
+        <HeroAvatar client:visible />
 
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
-                <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a8a]">Stack</p>
-                <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">TypeScript / Node.js / PostgreSQL</p>
-              </div>
-              <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
-                <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a8a]">Focus</p>
-                <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">Systems, products, and developer tooling</p>
-              </div>
-            </div>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
-                <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a8a]">Location</p>
-                <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">{profile.location}</p>
-              </div>
-              <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
-                <p class="mono text-[10px] uppercase tracking-[0.22em] text-[#8a8a8a]">Email</p>
-                <p class="mt-2 break-all text-sm leading-6 text-[#D4D4D4]">{profile.email}</p>
-              </div>
-            </div>
-          </div>
-        </aside>
+        <div class="mt-8 w-full max-w-sm lg:text-right">
+          <p class="mono text-[11px] uppercase tracking-[0.22em] text-[#7DD3A7]">Currently building</p>
+          <p class="mt-3 text-xl font-semibold tracking-[-0.03em] text-[#F5F5F5]">{profile.status}</p>
+          <ul class="mt-4 space-y-1.5">
+            {currentlyBuilding.map((item) => (
+              <li class="text-sm text-[#8a8a8a]">
+                {item.title} <span class="text-[#5a5a5a]">— {item.meta}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
 
@@ -172,171 +147,101 @@ Astro.response.headers.set(
 
     <GitHubActivity client:idle username="FarrelApriandry" />
 
-    <section id="tech-stack" class="pb-16 md:pb-20 lg:pb-24">
-      <div class="mb-8 border-b border-[#262626] pb-4">
+    <!-- Tech stack — open rows instead of five boxes -->
+    <section id="tech-stack" class="scroll-mt-28 pb-28 md:pb-36">
+      <div class="mb-12 max-w-2xl md:mb-16">
         <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Tech Stack</p>
-        <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">System thinking, product building, and technical depth.</h2>
+        <h2 class="mt-4 text-4xl font-semibold tracking-[-0.04em] text-[#F5F5F5] md:text-5xl">Tools, chosen for the job.</h2>
       </div>
 
-      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+      <div>
         {skillGroups.map((group) => (
-          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-5 transition-colors hover:border-[#3a3a3a]">
-            <p class="mono text-[10px] uppercase tracking-[0.2em] text-[#A1A1A1]">{group.label}</p>
-            <ul class="mt-4 flex flex-wrap gap-2">
-              {group.items.map((item) => (
-                <li class="rounded-full border border-[#262626] bg-[#0A0A0A] px-3 py-2 text-sm text-[#D4D4D4]">{item}</li>
-              ))}
-            </ul>
+          <div class="grid gap-2 border-b border-[#1F1F1F] py-6 first:border-t md:grid-cols-[220px_1fr] md:gap-10">
+            <p class="text-sm font-medium text-[#F5F5F5]">{group.label}</p>
+            <p class="text-[15px] leading-7 text-[#A1A1A1]">{group.items.join(' · ')}</p>
           </div>
         ))}
       </div>
 
-      <div class="mt-8 rounded-3xl border border-[#262626] bg-[#111111] p-6 md:p-8">
-        <p class="max-w-4xl text-xl leading-8 text-[#D4D4D4] md:text-2xl">
-          I prefer understanding the system behind the interface. From APIs and databases to networking and infrastructure, I enjoy building software as a complete system rather than treating the frontend as an isolated product.
-        </p>
-      </div>
+      <p class="mt-20 max-w-3xl text-2xl leading-9 text-[#D4D4D4] md:text-[1.7rem] md:leading-[2.6rem]">
+        I prefer understanding the system behind the interface — from APIs and databases to networking and infrastructure. I build software as a complete system, not a frontend in isolation.
+      </p>
     </section>
 
-    <section id="writing" class="pb-16 md:pb-20 lg:pb-24">
-      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-        <div>
-          <div class="mb-8 border-b border-[#262626] pb-4">
-            <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Writing</p>
-            <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Notes on systems, process, and technical thinking.</h2>
-          </div>
-
-          <div class="grid gap-3">
-            {engineeringNotes.map((note) => (
-              <div class="rounded-2xl border border-[#262626] bg-[#111111] p-4">
-                <div class="flex items-start gap-4">
-                  <span class="mono min-w-[2.5rem] text-sm text-[#7DD3A7]">{note.id}</span>
-                  <div class="min-w-0 flex-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <span class="mono rounded-full border border-[#262626] bg-[#0A0A0A] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">
-                        {note.badge}
-                      </span>
-                      <span class="mono text-[10px] uppercase tracking-[0.16em] text-[#8a8a8a]">Draft in progress</span>
-                    </div>
-                    <p class="mt-3 text-base font-medium text-[#F5F5F5]">{note.title}</p>
-                    <p class="mt-1 mono text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">{note.meta}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-            <p class="mono px-1 pt-1 text-[11px] uppercase tracking-[0.16em] text-[#8a8a8a]">
-              Full essays ship soon — technical threads land on LinkedIn first
-            </p>
-          </div>
-        </div>
-
-        <div>
-          <div class="mb-8 border-b border-[#262626] pb-4">
-            <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Currently Building</p>
-            <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Active projects and learning.</h2>
-          </div>
-
-          <div class="grid gap-3">
-            {currentlyBuilding.map((item) => (
-              <div class="rounded-2xl border border-[#262626] bg-[#111111] p-4">
-                <p class="mono text-[10px] uppercase tracking-[0.2em] text-[#7DD3A7]">{item.id}</p>
-                <p class="mt-2 text-xl font-medium text-[#F5F5F5]">{item.title}</p>
-                <p class="mt-2 mono text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">{item.meta}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+    <!-- Writing — quiet list, one honest note -->
+    <section id="writing" class="scroll-mt-28 pb-28 md:pb-36">
+      <div class="mb-12 max-w-2xl md:mb-16">
+        <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">Writing</p>
+        <h2 class="mt-4 text-4xl font-semibold tracking-[-0.04em] text-[#F5F5F5] md:text-5xl">Notes in progress.</h2>
       </div>
+
+      <div>
+        {engineeringNotes.map((note) => (
+          <div class="flex items-baseline gap-6 border-b border-[#1F1F1F] py-6 first:border-t md:gap-10">
+            <span class="mono min-w-[2rem] text-sm text-[#7DD3A7]">{note.id}</span>
+            <div class="min-w-0 flex-1">
+              <p class="text-lg font-medium text-[#F5F5F5]">{note.title}</p>
+              <p class="mt-1 text-sm text-[#8a8a8a]">{note.meta}</p>
+            </div>
+            <span class="mono shrink-0 text-[11px] uppercase tracking-[0.14em] text-[#5a5a5a]">Draft</span>
+          </div>
+        ))}
+      </div>
+      <p class="mt-6 text-sm text-[#8a8a8a]">Full essays ship soon — technical threads land on LinkedIn first.</p>
     </section>
 
-    <section id="about" class="pb-16 md:pb-20 lg:pb-24">
-      <div class="mb-8 border-b border-[#262626] pb-4">
+    <!-- About — timelines & rows, no nested cards -->
+    <section id="about" class="scroll-mt-28 pb-28 md:pb-36">
+      <div class="mb-12 max-w-2xl md:mb-16">
         <p class="mono text-[11px] uppercase tracking-[0.24em] text-[#7DD3A7]">About</p>
-        <h2 class="mt-3 text-3xl font-semibold tracking-[-0.06em] text-[#F5F5F5] md:text-4xl">Short bio, education, and recognition.</h2>
+        <h2 class="mt-4 text-4xl font-semibold tracking-[-0.04em] text-[#F5F5F5] md:text-5xl">Work, education, recognition.</h2>
       </div>
 
-      <div class="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-        <div class="space-y-8">
-          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="mono rounded-full border border-[#1f3f2b] bg-[#0f1b14] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-[#7DD3A7]">
-                Bio
-              </span>
-              <span class="mono rounded-full border border-[#262626] bg-[#0A0A0A] px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-[#A1A1A1]">
-                {profile.status}
-              </span>
-            </div>
-            <p class="mt-5 max-w-3xl text-lg leading-8 text-[#D4D4D4] md:text-xl">
-              {profile.value_statement}
-            </p>
-          </div>
-
-          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
-            <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Experience</p>
-            <div class="mt-5 space-y-5">
+      <div class="grid gap-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-20">
+        <div class="space-y-16">
+          <div>
+            <h3 class="mono text-[11px] uppercase tracking-[0.22em] text-[#7DD3A7]">Experience</h3>
+            <div class="mt-8">
               {experiences.slice(0, 4).map((experience) => (
-                <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
-                  <div class="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-                    <p class="text-base font-medium text-[#F5F5F5]">{experience.role}</p>
-                    <span class="mono text-[10px] uppercase tracking-[0.14em] text-[#A1A1A1]">{experience.period}</span>
-                  </div>
-                  <p class="mt-1 text-sm text-[#A1A1A1]">{experience.company}</p>
-                  <p class="mt-3 text-sm leading-6 text-[#D4D4D4]">{experience.description}</p>
+                <div class="relative border-l border-[#262626] pb-10 pl-7 last:pb-0">
+                  <span class="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-[#7DD3A7]/80" aria-hidden="true"></span>
+                  <p class="text-lg font-medium text-[#F5F5F5]">{experience.role}</p>
+                  <p class="mt-1 text-sm text-[#8a8a8a]">{experience.company} · {experience.period}</p>
+                  <p class="mt-3 max-w-xl text-[15px] leading-7 text-[#A1A1A1]">{experience.description}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
-            <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Education</p>
-            <div class="mt-5 space-y-4">
+          <div>
+            <h3 class="mono text-[11px] uppercase tracking-[0.22em] text-[#7DD3A7]">Education</h3>
+            <div class="mt-8">
               {educations.map((education) => (
-                <div class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
-                  <div class="flex items-baseline justify-between gap-4">
-                    <p class="text-base font-medium text-[#F5F5F5]">{education.institution}</p>
-                    <span class="mono text-[10px] uppercase tracking-[0.12em] text-[#A1A1A1]">{education.period}</span>
-                  </div>
-                  <p class="mt-1 text-sm text-[#D4D4D4]">{education.degree}</p>
-                  {education.details ? <p class="mt-2 text-sm leading-6 text-[#A1A1A1]">{education.details}</p> : null}
+                <div class="relative border-l border-[#262626] pb-10 pl-7 last:pb-0">
+                  <span class="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-[#7DD3A7]/80" aria-hidden="true"></span>
+                  <p class="text-lg font-medium text-[#F5F5F5]">{education.institution}</p>
+                  <p class="mt-1 text-sm text-[#8a8a8a]">{education.degree} · {education.period}</p>
+                  {education.details ? <p class="mt-3 max-w-xl text-[15px] leading-7 text-[#A1A1A1]">{education.details}</p> : null}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <div class="space-y-8">
-          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
-            <div class="flex items-center justify-between gap-3">
-              <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Recognition</p>
-              <span class="mono text-[10px] uppercase tracking-[0.16em] text-[#8a8a8a]">Awards</span>
-            </div>
-
-            <div class="mt-5 grid gap-3">
+        <div class="space-y-16">
+          <div>
+            <h3 class="mono text-[11px] uppercase tracking-[0.22em] text-[#7DD3A7]">Recognition</h3>
+            <div class="mt-4">
               {awards.map((award) => (
-                <article class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
-                  <div class="flex items-start justify-between gap-4">
-                    <div>
-                      <div class="flex flex-wrap items-center gap-2">
-                        <span class="mono rounded-full border border-[#262626] bg-[#111111] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-[#A1A1A1]">
-                          Award
-                        </span>
-                        <span class="mono rounded-full border border-[#1f3f2b] bg-[#0f1b14] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-[#7DD3A7]">
-                          {award.year}
-                        </span>
-                      </div>
-                      <p class="mt-3 text-base font-medium text-[#F5F5F5]">{award.title}</p>
-                      <p class="mt-1 text-sm text-[#A1A1A1]">{award.issuer}</p>
-                      <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">{award.description}</p>
-                    </div>
-
+                <article class="flex items-start justify-between gap-6 border-b border-[#1F1F1F] py-6 first:border-t">
+                  <div class="min-w-0">
+                    <p class="text-base font-medium text-[#F5F5F5]">{award.title}</p>
+                    <p class="mt-1 text-sm text-[#8a8a8a]">{award.issuer}{award.description ? ` — ${award.description}` : ''}</p>
+                  </div>
+                  <div class="flex shrink-0 items-center gap-3">
+                    <span class="mono text-sm text-[#8a8a8a]">{award.year}</span>
                     {award.link ? (
-                      <a
-                        href={award.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#262626] text-[#A1A1A1] transition-colors hover:border-[#3a3a3a] hover:text-[#F5F5F5]"
-                        aria-label={`Open ${award.title}`}
-                      >
+                      <a href={award.link} target="_blank" rel="noreferrer" aria-label={`Open ${award.title}`} class="text-[#A1A1A1] transition-colors hover:text-[#7DD3A7]">
                         <ExternalLink className="h-4 w-4" />
                       </a>
                     ) : null}
@@ -346,38 +251,19 @@ Astro.response.headers.set(
             </div>
           </div>
 
-          <div class="rounded-3xl border border-[#262626] bg-[#111111] p-6">
-            <div class="flex items-center justify-between gap-3">
-              <p class="mono text-[10px] uppercase tracking-[0.18em] text-[#7DD3A7]">Intellectual Property</p>
-              <span class="mono text-[10px] uppercase tracking-[0.16em] text-[#8a8a8a]">HKI</span>
-            </div>
-
-            <div class="mt-5 grid gap-3">
+          <div>
+            <h3 class="mono text-[11px] uppercase tracking-[0.22em] text-[#7DD3A7]">Intellectual Property</h3>
+            <div class="mt-4">
               {intellectualProperties.map((item) => (
-                <article class="rounded-2xl border border-[#262626] bg-[#0A0A0A] p-4">
-                  <div class="flex items-start justify-between gap-4">
-                    <div>
-                      <div class="flex flex-wrap items-center gap-2">
-                        <span class="mono rounded-full border border-[#262626] bg-[#111111] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-[#A1A1A1]">
-                          {item.type}
-                        </span>
-                        <span class="mono rounded-full border border-[#1f3f2b] bg-[#0f1b14] px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-[#7DD3A7]">
-                          {item.year}
-                        </span>
-                      </div>
-                      <p class="mt-3 text-base font-medium text-[#F5F5F5]">{item.title}</p>
-                      <p class="mt-1 text-sm text-[#A1A1A1]">{item.issuer}</p>
-                      <p class="mt-2 text-sm leading-6 text-[#D4D4D4]">{item.description}</p>
-                    </div>
-
+                <article class="flex items-start justify-between gap-6 border-b border-[#1F1F1F] py-6 first:border-t">
+                  <div class="min-w-0">
+                    <p class="text-base font-medium text-[#F5F5F5]">{item.title}</p>
+                    <p class="mt-1 text-sm text-[#8a8a8a]">{item.type} · {item.issuer}{item.description ? ` — ${item.description}` : ''}</p>
+                  </div>
+                  <div class="flex shrink-0 items-center gap-3">
+                    <span class="mono text-sm text-[#8a8a8a]">{item.year}</span>
                     {item.link ? (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#262626] text-[#A1A1A1] transition-colors hover:border-[#3a3a3a] hover:text-[#F5F5F5]"
-                        aria-label={`Open ${item.title}`}
-                      >
+                      <a href={item.link} target="_blank" rel="noreferrer" aria-label={`Open ${item.title}`} class="text-[#A1A1A1] transition-colors hover:text-[#7DD3A7]">
                         <ExternalLink className="h-4 w-4" />
                       </a>
                     ) : null}

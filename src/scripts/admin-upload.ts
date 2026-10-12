@@ -8,6 +8,66 @@
 
 type UploadJson = { url?: string; error?: string };
 
+/**
+ * Client-side compression: resize + convert to WebP before upload.
+ * Max 1600px on the long side, WebP quality 82 — a 1.5MB PNG screenshot
+ * typically lands around 150-250KB. Runs here (not on the server) because
+ * the admin UI has exactly one user, so no compat farm to worry about.
+ *
+ * GIFs pass through untouched (converting would kill the animation), and
+ * anything this browser can't decode (e.g. AVIF on older builds) falls
+ * back to the original file — the server still accepts it as-is.
+ */
+const MAX_SIDE = 1600;
+const WEBP_QUALITY = 0.82;
+
+async function compressImage(file: File): Promise<File> {
+  if (file.type === 'image/gif') return file;
+
+  let bitmap: ImageBitmap | null = null;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch {
+    return file;
+  }
+
+  try {
+    const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+    const targetW = Math.max(1, Math.round(bitmap.width * scale));
+    const targetH = Math.max(1, Math.round(bitmap.height * scale));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+
+    const base =
+      (file.name.replace(/\.[^.]+$/, '') || 'image')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 48) || 'image';
+
+    const toBlob = (type: string, quality: number): Promise<Blob | null> =>
+      new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+
+    const webp = await toBlob('image/webp', WEBP_QUALITY);
+    if (webp && webp.size > 0 && webp.type === 'image/webp') {
+      return new File([webp], `${base}.webp`, { type: 'image/webp' });
+    }
+    // Fallback for browsers that can't encode WebP (old Safari) — JPEG.
+    const jpeg = await toBlob('image/jpeg', 0.85);
+    if (jpeg && jpeg.size > 0) {
+      return new File([jpeg], `${base}.jpg`, { type: 'image/jpeg' });
+    }
+    return file;
+  } finally {
+    bitmap.close();
+  }
+}
+
 function initUploadComponent(root: HTMLElement): void {
   const variant = (root.dataset.variant ?? 'cover') as 'cover' | 'gallery';
   const bucket = root.dataset.bucket ?? 'projects';
@@ -118,9 +178,10 @@ function initUploadComponent(root: HTMLElement): void {
     }
   };
 
-  const uploadFile = async (file: File): Promise<string> => {
+  const uploadFile = async (file: File): Promise<{ url: string; note: string }> => {
+    const optimized = await compressImage(file);
     const body = new FormData();
-    body.append('file', file);
+    body.append('file', optimized);
     body.append('bucket', bucket);
     body.append('folder', folder);
     const response = await fetch('/api/admin/upload', { method: 'POST', body });
@@ -128,7 +189,13 @@ function initUploadComponent(root: HTMLElement): void {
     if (!response.ok || !payload.url) {
       throw new Error(payload.error ?? `Upload failed (${response.status})`);
     }
-    return payload.url;
+    const fmt = (bytes: number) =>
+      bytes >= 1024 * 1024 ? `${(bytes / (1024 * 1024)).toFixed(1)}MB` : `${Math.max(1, Math.round(bytes / 1024))}KB`;
+    const note =
+      optimized !== file
+        ? `${file.name} (${fmt(file.size)} → ${fmt(optimized.size)})`
+        : file.name;
+    return { url: payload.url, note };
   };
 
   const handleFiles = async (files: FileList | File[]): Promise<void> => {
@@ -142,11 +209,11 @@ function initUploadComponent(root: HTMLElement): void {
     try {
       for (const file of list) {
         await showStatusWhile(`Uploading ${file.name}…`, async () => {
-          const url = await uploadFile(file);
+          const { url, note } = await uploadFile(file);
           urls = variant === 'gallery' ? [...urls, url] : [url];
           sync();
           render();
-          setStatus(variant === 'gallery' ? 'Image added.' : 'Image ready.', 'ok');
+          setStatus(`Done: ${note}`, 'ok');
         });
       }
     } catch (error) {

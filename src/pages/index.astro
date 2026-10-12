@@ -56,14 +56,20 @@ const currentlyBuilding = [
 
 const currentYear = new Date().getFullYear();
 
-// CDN-cache the public homepage (admin edits go live within ~10 min).
-// Degraded fallback snapshots must never be cached — error banner data.
+// CDN-cache the public homepage briefly. Admin edits (new covers, project
+// updates) go through the dashboard and must show up fast — a short s-maxage
+// balances edge speed with freshness. Degraded fallback snapshots must never
+// be cached — they carry the error banner.
 Astro.response.headers.set(
   'Cache-Control',
   degraded
     ? 'no-store'
-    : 'public, s-maxage=600, stale-while-revalidate=86400',
+    : 'public, s-maxage=60, stale-while-revalidate=300',
 );
+// Build marker: proves which deploy served this HTML when debugging
+// stale-cache reports (Vercel exposes the SHA; falls back to 'local').
+const buildSha = import.meta.env.VERCEL_GIT_COMMIT_SHA ?? process.env.VERCEL_GIT_COMMIT_SHA ?? 'local';
+Astro.response.headers.set('X-Portfolio-Build', `${buildSha} / ${new Date().toISOString()}`);
 ---
 
 <Layout title={`${profile.name} | ${profile.role}`} description={profile.value_statement}>

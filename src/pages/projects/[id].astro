@@ -19,7 +19,9 @@ if (!project) {
 }
 
 const card = toCardData(project);
-const gallery = (project.gallery ?? []).filter(Boolean);
+const gallery = (project.gallery ?? [])
+  .filter(Boolean)
+  .map((src) => (/^https?:\/\//.test(src) ? src : src.startsWith('/') ? src : `/${src}`));
 const responsibilities = (project.role_responsibilities ?? []).filter(Boolean);
 const heroImage = card.image;
 
@@ -151,7 +153,7 @@ const projectSchema = {
           {gallery.map((src, i) => (
             <figure class="overflow-hidden rounded-2xl border border-[#262626] bg-[#0A0A0A]">
               <img
-                src={src.startsWith('/') ? src : `/${src}`}
+                src={src}
                 alt={`${project.title} screenshot ${i + 1}`}
                 class="aspect-[16/9] w-full object-cover"
                 loading="lazy"

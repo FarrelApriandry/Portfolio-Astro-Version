@@ -10,7 +10,7 @@ import HeroAvatar from '../components/3d/HeroAvatar.tsx';
 import { getPortfolioData } from '../lib/db';
 import resumeMarkdown from '../docs/CV.md?raw';
 
-const { profile, socials, skillGroups, experiences, educations, projects, awards, intellectualProperties, degraded } = await getPortfolioData();
+const { profile, socials, skillGroups, experiences, educations, projects, awards, intellectualProperties, articles, degraded } = await getPortfolioData();
 
 if (!profile) {
   throw new Error('Profile data is missing');
@@ -47,6 +47,19 @@ const engineeringNotes = [
   { id: '03', title: 'Structuring TypeScript Backend Services', meta: 'Architecture · API · PostgreSQL' },
   { id: '04', title: 'What I Learned Building Nusantara', meta: 'Unreal Engine · Game Systems · Production' },
 ];
+
+// Medium sync feeds real articles; static notes only fill the gap before the
+// first sync (or when the DB is unreachable).
+const writingList = articles.length
+  ? articles.slice(0, 6).map((article, i) => ({
+      id: String(i + 1).padStart(2, '0'),
+      title: article.title,
+      meta: new Date(article.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      excerpt: article.excerpt,
+      tags: article.categories.slice(0, 3),
+      href: article.url,
+    }))
+  : engineeringNotes.map((note) => ({ ...note, excerpt: '', tags: [] as string[], href: '' }));
 
 const currentlyBuilding = [
   { title: 'Personal HomeLab', meta: 'Linux · Docker · Networking' },
@@ -182,18 +195,41 @@ Astro.response.headers.set('X-Portfolio-Build', `${buildSha} / ${new Date().toIS
       </div>
 
       <div>
-        {engineeringNotes.map((note) => (
-          <div class="flex items-baseline gap-6 border-b border-[#1F1F1F] py-6 first:border-t md:gap-10">
-            <span class="mono min-w-[2rem] text-sm text-[#7DD3A7]">{note.id}</span>
-            <div class="min-w-0 flex-1">
-              <p class="text-lg font-medium text-[#F5F5F5]">{note.title}</p>
-              <p class="mt-1 text-sm text-[#8a8a8a]">{note.meta}</p>
+        {writingList.map((note) => (
+          note.href ? (
+            <a
+              href={note.href}
+              target="_blank"
+              rel="noreferrer"
+              class="group flex items-baseline gap-6 border-b border-[#1F1F1F] py-6 first:border-t md:gap-10"
+            >
+              <span class="mono min-w-[2rem] text-sm text-[#7DD3A7]">{note.id}</span>
+              <div class="min-w-0 flex-1">
+                <p class="text-lg font-medium text-[#F5F5F5] transition-colors group-hover:text-[#7DD3A7]">{note.title}</p>
+                <p class="mt-1 text-sm text-[#8a8a8a]">
+                  {note.meta}{note.tags.length ? ` · ${note.tags.join(' · ')}` : ''}
+                </p>
+                {note.excerpt ? (
+                  <p class="mt-2 line-clamp-2 max-w-2xl text-sm leading-6 text-[#A1A1A1]">{note.excerpt}</p>
+                ) : null}
+              </div>
+              <span class="mono shrink-0 text-[11px] uppercase tracking-[0.14em] text-[#5a5a5a] transition-colors group-hover:text-[#7DD3A7]">Medium ↗</span>
+            </a>
+          ) : (
+            <div class="flex items-baseline gap-6 border-b border-[#1F1F1F] py-6 first:border-t md:gap-10">
+              <span class="mono min-w-[2rem] text-sm text-[#7DD3A7]">{note.id}</span>
+              <div class="min-w-0 flex-1">
+                <p class="text-lg font-medium text-[#F5F5F5]">{note.title}</p>
+                <p class="mt-1 text-sm text-[#8a8a8a]">{note.meta}</p>
+              </div>
+              <span class="mono shrink-0 text-[11px] uppercase tracking-[0.14em] text-[#5a5a5a]">Draft</span>
             </div>
-            <span class="mono shrink-0 text-[11px] uppercase tracking-[0.14em] text-[#5a5a5a]">Draft</span>
-          </div>
+          )
         ))}
       </div>
-      <p class="mt-6 text-sm text-[#8a8a8a]">Full essays ship soon — technical threads land on LinkedIn first.</p>
+      <p class="mt-6 text-sm text-[#8a8a8a]">
+        Synced daily from <a href="https://fapriandry.medium.com/" target="_blank" rel="noreferrer" class="text-[#F5F5F5] underline decoration-[#7DD3A7]/50 underline-offset-4 transition-colors hover:text-[#7DD3A7]">Medium</a> — long-form notes on systems, networking, and building in public.
+      </p>
     </section>
 
     <!-- About — timelines & rows, no nested cards -->

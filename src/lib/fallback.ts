@@ -1,4 +1,5 @@
 import type {
+  Article,
   Award,
   Education,
   Experience,
@@ -22,6 +23,7 @@ export function getFallbackPortfolioData(): {
   projects: Project[];
   awards: Award[];
   intellectualProperties: IntellectualProperty[];
+  articles: Article[];
   degraded: boolean;
 } {
   const profile: Profile = {
@@ -231,6 +233,7 @@ export function getFallbackPortfolioData(): {
     projects,
     awards,
     intellectualProperties,
+    articles: [],
     degraded: true,
   };
 }

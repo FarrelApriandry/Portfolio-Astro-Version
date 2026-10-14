@@ -120,10 +120,20 @@ export type IntellectualProperty = {
   link: string;
 };
 
+export type Article = {
+  guid: string;
+  title: string;
+  url: string;
+  published_at: string;
+  categories: string[];
+  thumbnail: string | null;
+  excerpt: string;
+};
+
 export async function getPortfolioData() {
   try {
     const sql = getSql();
-    const [profileResult, socialsResult, skillGroupsResult, experiencesResult, educationsResult, projectsResult, awardsResult, intellectualPropertiesResult] = await Promise.all([
+    const [profileResult, socialsResult, skillGroupsResult, experiencesResult, educationsResult, projectsResult, awardsResult, intellectualPropertiesResult, articlesResult] = await Promise.all([
       sql`SELECT * FROM "profile" LIMIT 1`,
       sql`SELECT * FROM socials ORDER BY id ASC`,
       sql`SELECT * FROM skill_groups ORDER BY id ASC`,
@@ -132,6 +142,7 @@ export async function getPortfolioData() {
       sql`SELECT * FROM projects ORDER BY featured DESC, year DESC, title ASC`,
       sql`SELECT * FROM awards ORDER BY year DESC, id DESC`,
       sql`SELECT * FROM intellectual_properties ORDER BY year DESC, id DESC`,
+      sql`SELECT guid, title, url, published_at, categories, thumbnail, excerpt FROM articles ORDER BY published_at DESC LIMIT 10`,
     ]);
 
     return {
@@ -143,6 +154,15 @@ export async function getPortfolioData() {
       projects: projectsResult as Project[],
       awards: awardsResult as Award[],
       intellectualProperties: intellectualPropertiesResult as IntellectualProperty[],
+      articles: (articlesResult as Record<string, unknown>[]).map((row) => ({
+        guid: String(row.guid),
+        title: String(row.title),
+        url: String(row.url),
+        published_at: row.published_at instanceof Date ? row.published_at.toISOString() : String(row.published_at),
+        categories: (row.categories ?? []) as string[],
+        thumbnail: (row.thumbnail as string | null) ?? null,
+        excerpt: String(row.excerpt ?? ''),
+      })) as Article[],
       degraded: false,
     };
   } catch (error) {

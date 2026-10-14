@@ -1,0 +1,24 @@
+name: Sync Medium articles
+
+on:
+  schedule:
+    # 17:00 UTC = 00:00 WIB (Asia/Jakarta, UTC+7)
+    - cron: '0 17 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install --no-audit --no-fund --omit=dev @neondatabase/serverless
+
+      - run: node scripts/sync-medium.mjs
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

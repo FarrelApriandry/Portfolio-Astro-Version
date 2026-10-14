@@ -40,7 +40,7 @@ const actionLinks = sections.filter((section) => section.key !== 'profile');
         {
           actionLinks.map((section) => (
             <a
-              href={`/admin/${section.key}`}
+              href={section.href}
               class:list={[
                 'flex min-h-[44px] items-center rounded-lg px-3 text-sm transition-colors',
                 active === section.key
@@ -94,7 +94,7 @@ const actionLinks = sections.filter((section) => section.key !== 'profile');
           {
             actionLinks.map((section) => (
               <a
-                href={`/admin/${section.key}`}
+                href={section.href}
                 class:list={[
                   'min-h-[40px] shrink-0 rounded-full border px-4 text-sm leading-[38px] transition-colors',
                   active === section.key

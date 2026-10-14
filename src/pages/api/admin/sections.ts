@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { canReadFormData, isAdminAuthenticated } from '../../../lib/admin';
 import { parseJsonField, parseListField } from '../../../lib/admin';
 import { sql } from '../../../lib/db';
-import { isSectionKey, type SectionKey } from '../../../lib/admin-sections';
+import { isSectionKey, sectionRoutes, type SectionKey } from '../../../lib/admin-sections';
 
 export const prerender = false;
 
@@ -17,17 +17,8 @@ const asRecordId = (value: FormDataEntryValue | null, label: string) => {
   return parsed;
 };
 
-/** section key -> page route (skill_groups + IP use friendlier URLs) */
-const routes: Record<SectionKey, string> = {
-  profile: '/admin',
-  socials: '/admin/socials',
-  skill_groups: '/admin/skill-groups',
-  experiences: '/admin/experiences',
-  educations: '/admin/educations',
-  projects: '/admin/projects',
-  awards: '/admin/awards',
-  intellectual_properties: '/admin/ip',
-};
+/** section key -> page route (kept in admin-sections so links can't drift) */
+const routes = sectionRoutes;
 
 /**
  * Shared POST handler for the six simple sections (everything except

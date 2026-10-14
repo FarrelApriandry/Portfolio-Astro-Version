@@ -4,7 +4,7 @@ import Field from '../../components/admin/Field.astro';
 import TextareaField from '../../components/admin/TextareaField.astro';
 import FormCard from '../../components/admin/FormCard.astro';
 import { isAdminAuthenticated } from '../../lib/admin';
-import { sections } from '../../lib/admin-sections';
+import { sections, sectionRoutes, type SectionKey } from '../../lib/admin-sections';
 import { getPortfolioData } from '../../lib/db';
 
 if (!isAdminAuthenticated(Astro.cookies)) {
@@ -37,7 +37,7 @@ const counts: Array<{ key: string; label: string; value: string }> = [
 
   <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
     {counts.map((item) => (
-      <a href={`/admin/${item.key}`} class="group rounded-xl border border-[#262626] bg-[#111111] p-4 transition-colors hover:border-[#7DD3A7]/40">
+      <a href={sectionRoutes[item.key as SectionKey] ?? '/admin'} class="group rounded-xl border border-[#262626] bg-[#111111] p-4 transition-colors hover:border-[#7DD3A7]/40">
         <p class="text-sm text-[#A1A1A1]">{item.label}</p>
         <p class="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#F5F5F5]">{item.value}</p>
         <p class="mt-2 text-xs text-[#7DD3A7] opacity-0 transition-opacity group-hover:opacity-100">Manage →</p>
@@ -70,7 +70,7 @@ const counts: Array<{ key: string; label: string; value: string }> = [
 
   <div class="mt-10 grid gap-3 sm:grid-cols-2">
     {sections.filter((section) => section.key !== 'profile').map((section) => (
-      <a href={`/admin/${section.key}`} class="rounded-xl border border-[#262626] bg-[#111111] p-5 transition-colors hover:border-[#3a3a3a]">
+      <a href={section.href} class="rounded-xl border border-[#262626] bg-[#111111] p-5 transition-colors hover:border-[#3a3a3a]">
         <h2 class="text-base font-medium text-[#F5F5F5]">{section.label}</h2>
         <p class="mt-1 text-sm text-[#A1A1A1]">{section.description}</p>
       </a>

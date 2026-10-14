@@ -14,20 +14,31 @@ export type SectionMeta = {
   description: string;
   /** One-line noun for list headings, e.g. "social link" */
   noun: string;
+  /**
+   * Admin page route for this section. Kept here (not derived from `key`)
+   * because keys are DB table names (underscored) while routes are
+   * human-friendly slugs — deriving them caused /admin/skill_groups 404s.
+   */
+  href: string;
 };
 
 export const sections: SectionMeta[] = [
-  { key: 'profile', label: 'Profile', description: 'Primary bio, role, and contact details.', noun: 'profile' },
-  { key: 'socials', label: 'Socials', description: 'External links and profile icons.', noun: 'social link' },
-  { key: 'skill_groups', label: 'Skill Groups', description: 'Grouped technical stack lists.', noun: 'skill group' },
-  { key: 'experiences', label: 'Experiences', description: 'Professional timeline entries.', noun: 'experience' },
-  { key: 'educations', label: 'Educations', description: 'Academic background entries.', noun: 'education' },
-  { key: 'projects', label: 'Projects', description: 'Case-study style portfolio projects.', noun: 'project' },
-  { key: 'awards', label: 'Awards', description: 'Awards and recognitions.', noun: 'award' },
-  { key: 'intellectual_properties', label: 'IP Records', description: 'HKI / intellectual property records.', noun: 'IP record' },
+  { key: 'profile', label: 'Profile', description: 'Primary bio, role, and contact details.', noun: 'profile', href: '/admin' },
+  { key: 'socials', label: 'Socials', description: 'External links and profile icons.', noun: 'social link', href: '/admin/socials' },
+  { key: 'skill_groups', label: 'Skill Groups', description: 'Grouped technical stack lists.', noun: 'skill group', href: '/admin/skill-groups' },
+  { key: 'experiences', label: 'Experiences', description: 'Professional timeline entries.', noun: 'experience', href: '/admin/experiences' },
+  { key: 'educations', label: 'Educations', description: 'Academic background entries.', noun: 'education', href: '/admin/educations' },
+  { key: 'projects', label: 'Projects', description: 'Case-study style portfolio projects.', noun: 'project', href: '/admin/projects' },
+  { key: 'awards', label: 'Awards', description: 'Awards and recognitions.', noun: 'award', href: '/admin/awards' },
+  { key: 'intellectual_properties', label: 'IP Records', description: 'HKI / intellectual property records.', noun: 'IP record', href: '/admin/ip' },
 ];
 
 export const sectionByKey = new Map(sections.map((section) => [section.key, section]));
+
+/** section key -> admin route, derived from the metadata above. */
+export const sectionRoutes = Object.fromEntries(
+  sections.map((section) => [section.key, section.href]),
+) as Record<SectionKey, string>;
 
 export function isSectionKey(value: string): value is SectionKey {
   return sectionByKey.has(value as SectionKey);

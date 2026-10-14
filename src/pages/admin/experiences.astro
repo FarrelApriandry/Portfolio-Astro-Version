@@ -50,7 +50,7 @@ const editing = data.experiences.find((item) => item.id === editId) ?? null;
   </FormCard>
 
   <h2 class="mb-4 mt-10 text-lg font-semibold text-[#F5F5F5]">Current timeline <span class="text-sm font-normal text-[#8a8a8a]">({data.experiences.length})</span></h2>
-  <div class="grid gap-4">
+  <div class="space-y-4">
     {data.experiences.map((item) => (
       <article class="flex flex-col gap-3 rounded-xl border border-[#262626] bg-[#111111] p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5">
         <div class="min-w-0">

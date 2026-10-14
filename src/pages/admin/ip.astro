@@ -51,7 +51,7 @@ const editing = data.intellectualProperties.find((item) => item.id === editId) ?
   </FormCard>
 
   <h2 class="mb-4 mt-10 text-lg font-semibold text-[#F5F5F5]">Existing records <span class="text-sm font-normal text-[#8a8a8a]">({data.intellectualProperties.length})</span></h2>
-  <div class="grid gap-4">
+  <div class="space-y-4">
     {data.intellectualProperties.map((item) => (
       <article class="flex flex-col gap-3 rounded-xl border border-[#262626] bg-[#111111] p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5">
         <div class="min-w-0">

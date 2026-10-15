@@ -72,6 +72,7 @@ function computeStats(data: Activity[]) {
 
 export default function GitHubActivity({ username }: GitHubActivityProps) {
   const [year, setYear] = useState('last');
+  const [retryTick, setRetryTick] = useState(0);
   const [data, setData] = useState<Activity[]>([]);
   const [status, setStatus] = useState<Status>('loading');
 
@@ -110,7 +111,7 @@ export default function GitHubActivity({ username }: GitHubActivityProps) {
     return () => {
       cancelled = true;
     };
-  }, [username, year]);
+  }, [username, year, retryTick]);
 
   const stats = useMemo(() => computeStats(data), [data]);
   const profileUrl = `https://github.com/${username}`;
@@ -176,7 +177,7 @@ export default function GitHubActivity({ username }: GitHubActivityProps) {
             <p className="text-sm text-[#D4D4D4]">Could not load the contribution graph right now.</p>
             <button
               type="button"
-              onClick={() => setYear((current) => current)}
+              onClick={() => setRetryTick((tick) => tick + 1)}
               className="min-h-[40px] rounded-full border border-[#7DD3A7]/50 bg-[#7DD3A7]/10 px-5 text-sm text-[#F5F5F5] transition-colors hover:bg-[#7DD3A7]/15"
             >
               Retry

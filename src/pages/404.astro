@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.tsx';
+import Footer from '../components/Footer.astro';
+import { getPortfolioData } from '../lib/db';
+
+const data = await getPortfolioData();
+const { profile, socials } = data;
+
+const navItems = [
+  { label: 'Stack', href: '/#capabilities' },
+  { label: 'Projects', href: '/#projects' },
+  { label: 'Experience', href: '/#journey' },
+  { label: 'Writing', href: '/#writing' },
+];
+
+const footerLinks = navItems.map(({ label, href }) => ({ label, href }));
+const footerSocials = (socials ?? [])
+  .filter((social) => social.label && social.url)
+  .map((social) => ({ label: social.label, href: social.url }));
+const contactEmail = profile.email || 'fapriandry@gmail.com';
+---
+
+<Layout title="404 — Page not found | Farrel Apriandry" noindex={true}>
+  <Navbar
+    client:load
+    brand={profile.name}
+    items={navItems}
+    contactHref="/#contact"
+    resumeHref="/resume.pdf"
+  />
+  <main id="main-content" class="mx-auto flex min-h-[70vh] w-full max-w-3xl flex-col items-center justify-center px-6 py-24 text-center">
+    <p class="font-mono text-sm tracking-[0.3em] text-[#7DD3A7] uppercase">Error 404</p>
+    <h1 class="mt-4 text-4xl leading-tight font-extrabold tracking-tight text-balance text-[#F5F5F5] md:text-6xl">
+      This route doesn't exist<span class="text-[#7DD3A7]">.</span>
+    </h1>
+    <p class="mt-4 max-w-md text-base leading-relaxed text-[#8a8a8a]">
+      The page you're looking for moved, never existed, or the link has a typo. Let's get you back on track.
+    </p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a
+        href="/"
+        class="inline-flex min-h-[44px] items-center rounded-full bg-[#7DD3A7] px-6 text-sm font-semibold text-[#0A0A0A] transition-transform hover:scale-105"
+      >
+        Back to home
+      </a>
+      <a
+        href="/#projects"
+        class="inline-flex min-h-[44px] items-center rounded-full border border-[#262626] px-6 text-sm font-semibold text-[#F5F5F5] transition-colors hover:border-[#7DD3A7]/50 hover:bg-[#7DD3A7]/10"
+      >
+        Browse projects
+      </a>
+    </div>
+  </main>
+  <Footer year={new Date().getFullYear()} links={footerLinks} email={contactEmail} socials={footerSocials} />
+</Layout>

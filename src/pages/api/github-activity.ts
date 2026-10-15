@@ -14,7 +14,9 @@ function isValidYear(value: string): boolean {
 }
 
 export const GET: APIRoute = async ({ url }) => {
-  const year = url.searchParams.get('y') ?? 'last';
+  // Accept both `?y=` (what the site sends) and `?year=` (the obvious
+  // guess) — a filled-but-invalid value must 400, never silently default.
+  const year = url.searchParams.get('y') ?? url.searchParams.get('year') ?? 'last';
   if (!isValidYear(year)) {
     return new Response(JSON.stringify({ error: 'Invalid year' }), {
       status: 400,

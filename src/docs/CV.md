@@ -3,7 +3,8 @@
 **Software Engineering SME | Full-Stack Developer**  
 Magelang, Indonesia | [fapriandry@gmail.com](mailto:fapriandry@gmail.com) | Portfolio: [portfolio.relapri.my.id](http://portfolio.relapri.my.id) | GitHub: [FarrelApriandry](https://github.com/FarrelApriandry) | LinkedIn: [Farrel Apriandry](https://www.linkedin.com/in/farrel-apriandry/)
 
-Adaptable Software Engineering Subject Matter Expert and Full-Stack Engineer specializing in code review, algorithm evaluation, and systems architecture. Proven experience evaluating student code submissions for correctness, Big-O efficiency, and edge-case handling as an Algorithm Teaching Assistant. Proficient across multiple programming paradigms (TypeScript, Python, C++, SQL) with a track record of architecting institutional web platforms, leading grant-funded engineering teams, and authoring registered Intellectual Property Rights (HAKI).  
+---
+#### Adaptable Software Engineering Subject Matter Expert and Full-Stack Engineer specializing in code review, algorithm evaluation, and systems architecture. Proven experience evaluating student code submissions for correctness, Big-O efficiency, and edge-case handling as an Algorithm Teaching Assistant. Proficient across multiple programming paradigms (TypeScript, Python, C++, SQL) with a track record of architecting institutional web platforms, leading grant-funded engineering teams, and authoring registered Intellectual Property Rights (HAKI).
 ---
 
 # **Work Experience**

@@ -12,9 +12,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.6",
-    "@astrojs/react": "^6.0.6",
-    "@astrojs/vercel": "^11.0.11",
+    "@astrojs/node": "11.1.9",
+    "@astrojs/react": "7.1.0",
+    "@astrojs/vercel": "11.0.16",
     "@aws-sdk/client-s3": "^3.1148.0",
     "@neon/config": "^1.7.2",
     "@neon/env": "^1.4.3",
@@ -24,7 +24,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "astro": "^7.3.3",
+    "astro": "7.4.1",
     "drizzle-orm": "^0.45.3",
     "lucide-react": "0.477.0",
     "pdfkit": "^0.20.2",

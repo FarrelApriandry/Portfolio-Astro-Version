@@ -38,7 +38,7 @@ export default function Navbar({ brand, items, contactHref, resumeHref }: Navbar
       <div className="mx-auto max-w-[1280px]">
         <div className="rounded-full border border-[#262626]/80 bg-[#0A0A0A]/75 px-4 py-3 shadow-[0_12px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl">
           <div className="flex items-center justify-between gap-4">
-            <a href="#top" className="text-sm font-semibold tracking-[0.18em] uppercase text-[#F5F5F5]">
+            <a href="/" className="text-sm font-semibold tracking-[0.18em] uppercase text-[#F5F5F5]">
               {brand}
             </a>
 
